@@ -1,0 +1,7 @@
+{
+    "imports": {
+        "router": "npm:itty-router@4.0.23",
+        "ffmpeg/": "https://deno.land/x/fast_forward@0.1.6/",
+        "std/": "https://deno.land/std@0.208.0/"
+    }
+}
