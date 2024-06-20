@@ -1,6 +1,6 @@
 import { Trakt } from '../api/trakt/client.ts';
 import { resource, searchParam } from '~/lib/decorators/mod.ts';
-import { HttpMethod } from '~/api/resty.ts';
+import { HttpMethod } from '~/lib/types.ts';
 import { Handler } from '~/lib/handler.ts';
 
 @resource('/air-dates', HttpMethod.Get)

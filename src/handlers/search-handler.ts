@@ -1,6 +1,6 @@
 import { MovieDb as TheMovieDB } from 'tmdb';
 import { resource, searchParam } from '~/lib/decorators/mod.ts';
-import { HttpMethod } from '~/api/resty.ts';
+import { HttpMethod } from '~/lib/types.ts';
 import { Handler } from '~/lib/handler.ts';
 
 @resource('/search', HttpMethod.Get)

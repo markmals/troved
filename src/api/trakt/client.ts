@@ -1,4 +1,4 @@
-import { API } from '../resty.ts';
+import { API } from '../../lib/resty.ts';
 import { MovieSearchResult, SearchResult, ShowSearchResult } from './models/search-result.ts';
 
 export interface TraktAirDate {
