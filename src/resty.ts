@@ -86,8 +86,14 @@ export class RequestBuilder {
     }
 
     /** Adds the search parameters to the request. */
-    public searchParams(query: URLSearchParams): RequestBuilder {
-        for (let [key, value] of query) {
+    public searchParams(
+        query: URLSearchParams | Record<string, string>,
+    ): RequestBuilder {
+        for (
+            let [key, value] of query instanceof URLSearchParams
+                ? query
+                : Object.entries(query)
+        ) {
             this.url.searchParams.set(key, value);
         }
         return this;
