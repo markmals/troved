@@ -29,17 +29,20 @@ export class Trakt extends API {
     ) {
         const searchEndpoint = options.id ? `tmdb/${options.id}` : '';
         return await this.get(`search/${searchEndpoint}`)
-            .header('trakt-api-key', this.apiKey)
             .searchParams({ query: options.query, type: options.type })
             .fetchJson<Result[]>();
     }
 
     async airDates({ showId }: { showId: string }) {
         return await this.get(`shows/${showId}`)
-            .header('trakt-api-key', this.apiKey)
             .searchParams({ extended: 'full' })
             .fetchJson<TraktAirDate>()
             .then(({ airs }) => airs);
+    }
+
+    protected override get(path: string) {
+        // Add auth to all requests
+        return super.get(path).headers({ 'trakt-api-key': this.apiKey });
     }
 }
 
