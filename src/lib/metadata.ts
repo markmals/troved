@@ -13,11 +13,11 @@ export class MetadataManager {
     constructor(private metadata: Metadata | DecoratorMetadataObject | null) {}
 
     get #metadata() {
-        return this.metadata as Metadata;
+        return (this.metadata ??= {} as Metadata) as Metadata;
     }
 
     get route() {
-        return this.#metadata[ROUTE] ??= {} as { pattern: URLPattern; method: string };
+        return (this.#metadata[ROUTE] ??= {} as { pattern: URLPattern; method: string });
     }
 
     get environment() {
