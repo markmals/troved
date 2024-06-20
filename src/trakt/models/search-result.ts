@@ -1,11 +1,26 @@
 export interface SearchResult {
     type: string;
     score: number;
-    movie?: Movie;
-    show?: Movie;
-    episode?: Episode;
-    person?: Person;
-    list?: List;
+}
+
+export interface MovieSearchResult extends SearchResult {
+    movie: Movie;
+}
+
+export interface ShowSearchResult extends SearchResult {
+    show: Movie;
+}
+
+export interface EpisodeSearchResult extends SearchResult {
+    episode: Episode;
+}
+
+export interface PersonSearchResult extends SearchResult {
+    person: Person;
+}
+
+export interface ListSearchResult extends SearchResult {
+    list: List;
 }
 
 export interface Episode {
