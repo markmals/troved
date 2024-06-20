@@ -14,4 +14,34 @@ router
     .post('/subscribe', respondWith(SubscriptionResponder))
     .get('/', () => new Response('Hello, world!'));
 
+// class TroveRouter extends Router {
+//     static responders = [
+//         new SearchResponder(),
+//         new AirDateResponder(),
+//         new SubscriptionResponder(),
+//         new Responder('/', () => new Response('Hello, world!'))
+//     ]
+// }
+
+// TroveRouter.listen()
+
+// await new Server()
+//     .register([
+//         new SearchHandler(),
+//         new AirDateHandler(),
+//         new SubscriptionHandler(),
+//         new Handler('/', () => new Response('Hello, world!')),
+//     ])
+//     .environment(new Database())
+//     .listen()
+
+// export class SearchResponder implements Responder {
+//     @environment(Database)
+//     private accessor db!: Database;
+
+//     async execute() {
+//         return Response.json(this.db.get('foo'));
+//     }
+// }
+
 Deno.serve(router.handle);
