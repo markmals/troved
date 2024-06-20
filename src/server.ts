@@ -22,7 +22,7 @@ router
 //         new Responder('/', () => new Response('Hello, world!'))
 //     ]
 // }
-
+//
 // TroveRouter.listen()
 
 // await new Server()
@@ -35,6 +35,7 @@ router
 //     .environment(new Database())
 //     .listen()
 
+// @route('/search')
 // export class SearchResponder implements Responder {
 //     @environment(Database)
 //     private accessor db!: Database;
