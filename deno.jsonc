@@ -17,7 +17,7 @@
         }
     },
     "tasks": {
-        "serve": "deno run -A src/transcode.ts"
+        "serve": "deno run -A --unstable-hmr src/server.ts"
     },
     "importMap": "import-map.json"
 }
