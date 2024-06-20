@@ -1,26 +1,17 @@
 import { Router, withParams } from 'router';
+import { SearchResponder } from './search-responder.ts';
+import { AirDateResponder } from './air-date-responder.ts';
+import { SubscriptionResponder } from './subscription-responder.ts';
+import { respondWith } from './responder.ts';
+import 'std/dotenv/load.ts';
 
 const router = Router();
 
 router
     .all('*', withParams)
-    .get('/', () => Response.json({ ok: true }))
-    .get('/channel', async () => {
-        // let data;
-        // let error;
+    .get('/search', respondWith(SearchResponder))
+    .get('/air-dates', respondWith(AirDateResponder))
+    .post('/subscribe', respondWith(SubscriptionResponder))
+    .get('/', () => new Response('Hello, world!'));
 
-        // try {
-        //     data = await client.getChannel("UCxAS_aK7sS2x_bqnlJHDSHw");
-        //     data = await data.getPlaylists();
-        // } catch (e) {
-        //     error = e;
-        //     error.info = JSON.parse(error.info);
-        // }
-
-        // return Response.json({
-        //     data,
-        //     error,
-        // });
-    });
-
-Deno.serve((request) => router.handle(request));
+Deno.serve(router.handle);
