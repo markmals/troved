@@ -1,9 +1,5 @@
 import { API } from '../resty.ts';
-import {
-    MovieSearchResult,
-    SearchResult,
-    ShowSearchResult,
-} from './models/search-result.ts';
+import { MovieSearchResult, SearchResult, ShowSearchResult } from './models/search-result.ts';
 
 export interface TraktAirDate {
     airs: {
@@ -20,18 +16,10 @@ export class Trakt extends API {
         super();
     }
 
-    async search(
-        options: { query: string; type: 'movie' },
-    ): Promise<MovieSearchResult[]>;
-    async search(
-        options: { query: string; type: 'show' },
-    ): Promise<ShowSearchResult[]>;
-    async search(
-        options: { id: string; type: 'movie' },
-    ): Promise<MovieSearchResult[]>;
-    async search(
-        options: { id: string; type: 'show' },
-    ): Promise<ShowSearchResult[]>;
+    async search(options: { query: string; type: 'movie' }): Promise<MovieSearchResult[]>;
+    async search(options: { query: string; type: 'show' }): Promise<ShowSearchResult[]>;
+    async search(options: { id: string; type: 'movie' }): Promise<MovieSearchResult[]>;
+    async search(options: { id: string; type: 'show' }): Promise<ShowSearchResult[]>;
     async search<Result extends SearchResult>(
         options: { query: string; id?: undefined; type: 'movie' | 'show' } | {
             query?: undefined;
@@ -39,9 +27,8 @@ export class Trakt extends API {
             type: 'movie' | 'show';
         },
     ) {
-        return await this.get(
-            `search${options.id !== undefined ? `/tmdb/${options.id!}` : ''}`,
-        )
+        const searchEndpoint = options.id ? `tmdb/${options.id}` : '';
+        return await this.get(`search/${searchEndpoint}`)
             .header('trakt-api-key', this.apiKey)
             .searchParams({ query: options.query, type: options.type })
             .fetchJson<Result[]>();
