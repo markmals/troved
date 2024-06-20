@@ -1,0 +1,22 @@
+{
+    // Variables reference: https://code.visualstudio.com/docs/editor/variables-reference
+    // Launch.json reference: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "request": "launch",
+            "name": "Deno: Run and Debug",
+            "type": "node",
+            "program": "${workspaceFolder}/src/server.ts",
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "runtimeExecutable": "${userHome}/.deno/bin/deno",
+            "runtimeArgs": [
+                "run",
+                "--inspect-wait",
+                "--allow-all"
+            ],
+            "attachSimplePort": 9229
+        }
+    ]
+}
