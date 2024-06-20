@@ -1,15 +1,17 @@
-import { Responder } from '../lib/interfaces.ts';
-import { query } from '../lib/routing.ts';
 import { Trakt } from '../api/trakt/client.ts';
+import { resource, searchParam } from '~/lib/decorators/mod.ts';
+import { HttpMethod } from '~/api/resty.ts';
+import { Handler } from '~/lib/handler.ts';
 
-export class AirDateResponder implements Responder {
+@resource('/air-dates', HttpMethod.Get)
+export class AirDateHandler extends Handler {
     private readonly traktApiKey = Deno.env.get('TRAKT_CLIENT_ID')!;
     private readonly client = new Trakt(this.traktApiKey);
 
-    @query()
+    @searchParam()
     private accessor id!: string;
 
-    async execute() {
+    async respond() {
         const response = await this.client.airDates({ showId: this.id });
         return Response.json(response);
     }
