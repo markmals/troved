@@ -75,11 +75,13 @@ export interface UserIds {
     slug: string;
 }
 
-export interface Movie {
+export interface Show {
     title: string;
     year: number;
     ids: EpisodeIds;
 }
+
+export interface Movie extends Show {}
 
 export interface Person {
     name: string;
