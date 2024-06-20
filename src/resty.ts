@@ -1,18 +1,18 @@
 export enum Method {
-    Get = "GET",
-    Post = "POST",
-    Put = "PUT",
-    Patch = "PATCH",
-    Delete = "DELETE",
+    Get = 'GET',
+    Post = 'POST',
+    Put = 'PUT',
+    Patch = 'PATCH',
+    Delete = 'DELETE',
 }
 
 export enum ContentType {
     /** The JSON content type. */
-    Json = "application/json",
+    Json = 'application/json',
     /** The XML content type. */
-    Xml = "application/xml",
+    Xml = 'application/xml',
     /** The Form Encoded content type. */
-    UrlEncoded = "application/x-www-form-urlencoded",
+    UrlEncoded = 'application/x-www-form-urlencoded',
 }
 
 export type Range = [lowerBound: number, upperBound: number];
@@ -30,13 +30,13 @@ export class RequestBuilder {
 
     /** Adds the Accept content type to the request. */
     public accept(contentType: ContentType): RequestBuilder {
-        this.requestInit.headers.set("Accept", contentType);
+        this.requestInit.headers.set('Accept', contentType);
         return this;
     }
 
     /** Adds the Content-Type to the request. */
     public contentType(contentType: ContentType): RequestBuilder {
-        this.requestInit.headers.set("Content-Type", contentType);
+        this.requestInit.headers.set('Content-Type', contentType);
         return this;
     }
 
