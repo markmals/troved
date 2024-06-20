@@ -1,7 +1,7 @@
 import { Router, withParams } from 'router';
-import { SearchResponder } from './search-responder.ts';
-import { AirDateResponder } from './air-date-responder.ts';
-import { SubscriptionResponder } from './subscription-responder.ts';
+import { SearchResponder } from './responders/search-responder.ts';
+import { AirDateResponder } from './responders/air-date-responder.ts';
+import { SubscriptionResponder } from './responders/subscription-responder.ts';
 import { respondWith } from './responder.ts';
 import 'std/dotenv/load.ts';
 
