@@ -1,12 +1,5 @@
-import type { IRequest, RouteHandler } from 'router';
-
-export interface Constructor<T> {
-    new (): T;
-}
-
-export interface Responder {
-    execute(): Promise<Response>;
-}
+import { IRequest, RouteHandler } from 'router';
+import { Constructor, Responder } from './interfaces.ts';
 
 const REQUEST = Symbol();
 
@@ -21,7 +14,7 @@ export function respondWith(
     };
 }
 
-function setRequest(request: IRequest, ResponderCtor: Constructor<Responder>) {
+export function setRequest(request: IRequest, ResponderCtor: Constructor<Responder>) {
     (ResponderCtor[Symbol.metadata] ??= {})[REQUEST] = request;
 }
 
@@ -64,15 +57,9 @@ export function param<Host>() {
     return makeRequestAccessorDecorator<Host, string>('param', 'params');
 }
 
-export function body<Host>(
-    type: 'text',
-): ClassAccessorDecorator<Host, Promise<string>>;
-export function body<Host, Data>(
-    type: 'json',
-): ClassAccessorDecorator<Host, Promise<Data>>;
-export function body<Host>(
-    type: 'formData',
-): ClassAccessorDecorator<Host, Promise<FormData>>;
+export function body<Host>(type: 'text'): ClassAccessorDecorator<Host, Promise<string>>;
+export function body<Host, Data>(type: 'json'): ClassAccessorDecorator<Host, Promise<Data>>;
+export function body<Host>(type: 'formData'): ClassAccessorDecorator<Host, Promise<FormData>>;
 export function body<Host>(
     type: 'blob' | 'bytes' | 'arrayBuffer' | 'text' | 'json' | 'formData',
 ): ClassAccessorDecorator<Host, Promise<any>> {
@@ -97,7 +84,3 @@ export function body<Host>(
         };
     };
 }
-
-// export function route<Host>() {
-//     return makeRequestAccessorDecorator<Host, string>('route', 'route');
-// }

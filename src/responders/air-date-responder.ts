@@ -1,5 +1,6 @@
-import { query, Responder } from './responder.ts';
-import { Trakt } from './trakt/client.ts';
+import { Responder } from '../lib/interfaces.ts';
+import { query } from '../lib/routing.ts';
+import { Trakt } from '../trakt/client.ts';
 
 export class AirDateResponder implements Responder {
     private readonly traktApiKey = Deno.env.get('TRAKT_CLIENT_ID')!;

@@ -1,5 +1,6 @@
 import { MovieDb as TheMovieDB } from 'tmdb';
-import { body, query, Responder } from './responder.ts';
+import { Responder } from '../lib/interfaces.ts';
+import { query } from '../lib/routing.ts';
 
 export class SearchResponder implements Responder {
     private readonly tmdbApiKey = Deno.env.get('TMDB_API_KEY')!;

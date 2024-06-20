@@ -1,5 +1,5 @@
-import { MovieDb as TheMovieDB } from 'tmdb';
-import { body, query, Responder } from './responder.ts';
+import { Responder } from '../lib/interfaces.ts';
+import { body } from '../lib/routing.ts';
 
 export class SubscriptionResponder implements Responder {
     @body('formData')
