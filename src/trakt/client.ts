@@ -5,8 +5,8 @@ import { SearchResult, ShowSearchResult } from './models/search-result.ts';
 export class Trakt extends API {
     protected readonly baseUrl = 'https://api.trakt.tv';
 
-    readonly apiKey = Deno.env.get('TRAKT_CLIENT_ID')!;
-    readonly apiSecret = Deno.env.get('TRAKT_API_SECRET')!;
+    private readonly apiKey = Deno.env.get('TRAKT_CLIENT_ID')!;
+    // private readonly apiSecret = Deno.env.get('TRAKT_API_SECRET')!;
 
     private async search<T extends SearchResult>(
         query: string,
@@ -24,3 +24,6 @@ export class Trakt extends API {
     }
 }
 
+// const client = new Trakt();
+// console.log(`${client.apiKey}\n${client.apiSecret}`);
+// console.log((await client.searchShows('Breaking Bad'))[0]);
