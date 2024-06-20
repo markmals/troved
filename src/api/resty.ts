@@ -1,4 +1,4 @@
-export enum Method {
+export enum HttpMethod {
     Get = 'GET',
     Post = 'POST',
     Put = 'PUT',
@@ -90,9 +90,7 @@ export class RequestBuilder {
         query: URLSearchParams | Record<string, string | undefined>,
     ): RequestBuilder {
         for (
-            let [key, value] of query instanceof URLSearchParams
-                ? query
-                : Object.entries(query)
+            let [key, value] of query instanceof URLSearchParams ? query : Object.entries(query)
         ) {
             if (value) this.url.searchParams.set(key, value);
         }
@@ -151,22 +149,22 @@ export abstract class API {
     }
 
     protected get(path: string) {
-        return this.buildRequestBuilder(Method.Get, path);
+        return this.buildRequestBuilder(HttpMethod.Get, path);
     }
 
     protected post(path: string) {
-        return this.buildRequestBuilder(Method.Post, path);
+        return this.buildRequestBuilder(HttpMethod.Post, path);
     }
 
     protected put(path: string) {
-        return this.buildRequestBuilder(Method.Put, path);
+        return this.buildRequestBuilder(HttpMethod.Put, path);
     }
 
     protected patch(path: string) {
-        return this.buildRequestBuilder(Method.Patch, path);
+        return this.buildRequestBuilder(HttpMethod.Patch, path);
     }
 
     protected delete(path: string) {
-        return this.buildRequestBuilder(Method.Delete, path);
+        return this.buildRequestBuilder(HttpMethod.Delete, path);
     }
 }
