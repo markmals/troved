@@ -12,7 +12,10 @@ export function body<Host extends Handler>(
     type: 'blob' | 'bytes' | 'arrayBuffer' | 'text' | 'json' | 'formData',
 ): ClassAccessorDecorator<Host, Promise<any>> {
     return makeRequestAccessorDecorator('body', function (propertyName) {
-        return this.request[type]();
+        return (async () => {
+            const result = await this.request[type]();
+            return result;
+        })();
     });
 }
 

@@ -1,7 +1,5 @@
+import { Handler, HttpMethod, resource, searchParam } from '@webstd/server';
 import { Trakt } from '../api/trakt/client.ts';
-import { resource, searchParam } from '~/lib/decorators/mod.ts';
-import { HttpMethod } from '~/lib/types.ts';
-import { Handler } from '~/lib/handler.ts';
 
 @resource('/air-dates', HttpMethod.Get)
 export class AirDateHandler extends Handler {

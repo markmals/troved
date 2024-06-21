@@ -1,6 +1,4 @@
-import { Handler } from '~/lib/handler.ts';
-import { body, resource } from '~/lib/decorators/mod.ts';
-import { HttpMethod } from '~/lib/types.ts';
+import { body, Handler, HttpMethod, resource } from '@webstd/server';
 
 @resource('/subscribe', HttpMethod.Post)
 export class SubscriptionHandler extends Handler {

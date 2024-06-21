@@ -1,4 +1,4 @@
-import { ContentType, HttpMethod, Range } from '~/lib/types.ts';
+import { ContentType, HttpMethod, Range, StatusError } from '@webstd/server';
 
 export class RequestBuilder {
     private requestInit: RequestInit & { headers: Headers } = {
@@ -107,16 +107,6 @@ export class RequestBuilder {
         this.accept(ContentType.UrlEncoded);
         let response = await this.fetch();
         return await response.formData();
-    }
-}
-
-export class StatusError extends Error {
-    public constructor(public response: Response) {
-        super();
-    }
-
-    public get cause() {
-        return this.response.statusText;
     }
 }
 

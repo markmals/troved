@@ -1,7 +1,5 @@
+import { Handler, HttpMethod, resource, searchParam } from '@webstd/server';
 import { MovieDb as TheMovieDB } from 'tmdb';
-import { resource, searchParam } from '~/lib/decorators/mod.ts';
-import { HttpMethod } from '~/lib/types.ts';
-import { Handler } from '~/lib/handler.ts';
 
 @resource('/search', HttpMethod.Get)
 export class SearchHandler extends Handler {
