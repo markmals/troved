@@ -1,4 +1,4 @@
-import { body, Handler, HttpMethod, resource } from '@webstd/server';
+import { body, Handler, HttpMethod, resource } from '@web/server';
 
 @resource('/subscribe', HttpMethod.Post)
 export class SubscriptionHandler extends Handler {

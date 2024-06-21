@@ -1,4 +1,4 @@
-import { Handler, HttpMethod, resource, searchParam } from '@webstd/server';
+import { Handler, HttpMethod, resource, searchParam } from '@web/server';
 import { MovieDb as TheMovieDB } from 'tmdb';
 
 @resource('/search', HttpMethod.Get)

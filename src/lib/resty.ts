@@ -1,4 +1,4 @@
-import { ContentType, HttpMethod, Range, StatusError } from '@webstd/server';
+import { ContentType, HttpMethod, Range, StatusError } from '@web/server';
 
 export class RequestBuilder {
     private requestInit: RequestInit & { headers: Headers } = {

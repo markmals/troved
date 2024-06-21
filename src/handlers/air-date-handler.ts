@@ -1,4 +1,4 @@
-import { Handler, HttpMethod, resource, searchParam } from '@webstd/server';
+import { Handler, HttpMethod, resource, searchParam } from '@web/server';
 import { Trakt } from '../api/trakt/client.ts';
 
 @resource('/air-dates', HttpMethod.Get)

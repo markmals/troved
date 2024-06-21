@@ -1,4 +1,4 @@
-import { Handler } from '@webstd/server';
+import { Handler } from '@web/server';
 import { Metadata } from './metadata.ts';
 
 export interface HandlerConstructor {

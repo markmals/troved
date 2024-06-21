@@ -1,4 +1,4 @@
-import { API } from '@webstd/server';
+import { API } from '@web/server';
 import { MovieSearchResult, SearchResult, ShowSearchResult } from './models/search-result.ts';
 
 export interface TraktAirDate {

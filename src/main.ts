@@ -1,4 +1,4 @@
-import { Server } from '@webstd/server';
+import { Server } from '@web/server';
 import { AirDateHandler, SearchHandler, SubscriptionHandler } from '~/handlers/mod.ts';
 
 import 'std/dotenv/load.ts';
