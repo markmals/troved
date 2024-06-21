@@ -7,13 +7,13 @@ export function makeRequestAccessorDecorator<Host extends Handler, Value>(
 ): ClassAccessorDecorator<Host, Value> {
     return (_target, context) => {
         if (context.static) {
-            throw new Error(`@${name}() can only be applied to instance members.`);
+            throw new TypeError(`@${name}() can only be applied to instance members.`);
         }
 
         return {
             get() {
                 if (typeof context.name === 'symbol') {
-                    throw new Error(`@${name}() cannot be applied to symbol-named properties.`);
+                    throw new TypeError(`@${name}() cannot be applied to symbol-named properties.`);
                 }
 
                 return action.call(this, context.name);
