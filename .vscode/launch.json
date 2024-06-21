@@ -7,7 +7,7 @@
             "request": "launch",
             "name": "Deno: Run and Debug",
             "type": "node",
-            "program": "${workspaceFolder}/src/server.ts",
+            "program": "${workspaceFolder}/src/main.ts",
             "cwd": "${workspaceFolder}",
             "env": {},
             "runtimeExecutable": "${userHome}/.deno/bin/deno",
