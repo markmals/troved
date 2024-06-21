@@ -1,5 +1,5 @@
 import { Handler } from '../handler.ts';
-import { ClassAccessorDecorator } from '../types.ts';
+import { ClassAccessorDecorator } from '../private-types.ts';
 
 export function makeRequestAccessorDecorator<Host extends Handler, Value>(
     name: string,

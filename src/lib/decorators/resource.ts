@@ -1,6 +1,5 @@
-import type { HandlerConstructor } from '../handler.ts';
 import { MetadataManager } from '../metadata.ts';
-import type { ClassDecorator } from '../types.ts';
+import type { ClassDecorator, HandlerConstructor } from '../private-types.ts';
 
 /** A class decorator that denotes a class as a resource for a given path and HTTP method */
 export function resource<HandlerClass extends HandlerConstructor>(

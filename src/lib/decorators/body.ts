@@ -1,6 +1,6 @@
 import { Handler } from '../handler.ts';
 import { makeRequestAccessorDecorator } from './request-accessor.ts';
-import { ClassAccessorDecorator } from '../types.ts';
+import { ClassAccessorDecorator } from '../private-types.ts';
 
 export function body<Host extends Handler>(type: 'arrayBuffer'): ClassAccessorDecorator<Host, Promise<ArrayBuffer>>;
 export function body<Host extends Handler>(type: 'blob'): ClassAccessorDecorator<Host, Promise<Blob>>;
