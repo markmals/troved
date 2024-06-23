@@ -7,9 +7,9 @@ export class Server {
     private readonly environmentStorage = new Map<Function, Record<PropertyKey, any>>();
 
     private readonly handler = async (request: Request) => {
-        for (const Route of this.routes) {
+        for (const RouteHandler of this.routes) {
             // Get the metadata for the route handler
-            let metadata = new MetadataManager(Route[Symbol.metadata]);
+            let metadata = new MetadataManager(RouteHandler[Symbol.metadata]);
 
             // Find a route matching the current method
             if (metadata.route.method === request.method) {
@@ -19,13 +19,13 @@ export class Server {
                     // Pass the environment to the handler
                     metadata.environment = this.environmentStorage;
                     // Create and invoke the handler
-                    let routeHandler = new Route({ request, urlParams: result.pathname.groups });
+                    let routeHandler = new RouteHandler({ request, urlParams: result.pathname.groups });
                     return await routeHandler.respond();
                 }
             }
         }
 
-        // No matching route found
+        // No matching route handler found
         return new Response(null, { status: 404 });
     };
 
