@@ -5,7 +5,7 @@ export class SubscriptionHandler extends Handler {
     @body('formData')
     private accessor form!: Promise<FormData>;
 
-    async respond() {
+    public async respond() {
         return Response.json({});
     }
 }

@@ -9,7 +9,7 @@ export class SearchHandler extends Handler {
     @searchParam()
     private accessor q!: string;
 
-    async respond() {
+    public async respond() {
         let response = await this.client.searchTv({ query: this.q });
         return Response.json(
             response.results?.map(({ id, overview, name }) => ({

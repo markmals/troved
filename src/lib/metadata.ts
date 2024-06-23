@@ -13,21 +13,21 @@ export interface Metadata {
 }
 
 export class MetadataManager {
-    constructor(private metadata: Metadata | DecoratorMetadataObject | null) {}
+    private metadata: Metadata;
 
-    get #metadata() {
-        return (this.metadata ??= {} as Metadata) as Metadata;
+    public constructor(metadata: Metadata | DecoratorMetadataObject | null) {
+        this.metadata = (metadata ??= {} as Metadata) as Metadata;
     }
 
     get route() {
-        return (this.#metadata[ROUTE] ??= {} as { pattern: URLPattern; method: string });
+        return (this.metadata[ROUTE] ??= {} as { pattern: URLPattern; method: string });
     }
 
     get environment() {
-        return this.#metadata[ENV]!;
+        return this.metadata[ENV]!;
     }
 
     set environment(newValue) {
-        this.#metadata[ENV] = newValue;
+        this.metadata[ENV] = newValue;
     }
 }

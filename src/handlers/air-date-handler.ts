@@ -9,7 +9,7 @@ export class AirDateHandler extends Handler {
     @searchParam()
     private accessor id!: string;
 
-    async respond() {
+    public async respond() {
         let response = await this.client.airDates({ showId: this.id });
         return Response.json(response);
     }

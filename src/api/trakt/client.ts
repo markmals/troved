@@ -12,15 +12,15 @@ export interface TraktAirDate {
 export class Trakt extends API {
     protected readonly baseUrl = 'https://api.trakt.tv';
 
-    constructor(private apiKey: string) {
+    public constructor(private apiKey: string) {
         super();
     }
 
-    async search(options: { query: string; type: 'movie' }): Promise<MovieSearchResult[]>;
-    async search(options: { query: string; type: 'show' }): Promise<ShowSearchResult[]>;
-    async search(options: { id: string; type: 'movie' }): Promise<MovieSearchResult[]>;
-    async search(options: { id: string; type: 'show' }): Promise<ShowSearchResult[]>;
-    async search<Result extends SearchResult>(
+    public async search(options: { query: string; type: 'movie' }): Promise<MovieSearchResult[]>;
+    public async search(options: { query: string; type: 'show' }): Promise<ShowSearchResult[]>;
+    public async search(options: { id: string; type: 'movie' }): Promise<MovieSearchResult[]>;
+    public async search(options: { id: string; type: 'show' }): Promise<ShowSearchResult[]>;
+    public async search<Result extends SearchResult>(
         options: { query: string; id?: undefined; type: 'movie' | 'show' } | {
             query?: undefined;
             id: string;
@@ -33,7 +33,7 @@ export class Trakt extends API {
             .fetchJson<Result[]>();
     }
 
-    async airDates({ showId }: { showId: string }) {
+    public async airDates({ showId }: { showId: string }) {
         return await this.get(`shows/${showId}`)
             .searchParams({ extended: 'full' })
             .fetchJson<TraktAirDate>()

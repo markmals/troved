@@ -2,12 +2,12 @@ import { MetadataManager } from './metadata.ts';
 import { HandlerConstructor } from '~/lib/private-types.ts';
 
 export class Server {
-    #routes: HandlerConstructor[] = [];
+    private routes: HandlerConstructor[] = [];
     // deno-lint-ignore ban-types
-    #environment = new Map<Function, Record<PropertyKey, any>>();
+    private environmentStorage = new Map<Function, Record<PropertyKey, any>>();
 
-    #handler = async (request: Request) => {
-        for (const Route of this.#routes) {
+    private handler = async (request: Request) => {
+        for (const Route of this.routes) {
             // Get the metadata for the route handler
             let metadata = new MetadataManager(Route[Symbol.metadata]);
 
@@ -17,7 +17,7 @@ export class Server {
                 let result = metadata.route.pattern.exec(request.url);
                 if (result) {
                     // Pass the environment to the handler
-                    metadata.environment = this.#environment;
+                    metadata.environment = this.environmentStorage;
                     // Create and invoke the handler
                     let routeHandler = new Route(request, result.pathname.groups);
                     return await routeHandler.respond();
@@ -29,17 +29,17 @@ export class Server {
         return new Response(null, { status: 404 });
     };
 
-    register(handlers: HandlerConstructor[]): this {
-        this.#routes = [...this.#routes.filter((route) => handlers.includes(route)), ...handlers];
+    public register(handlers: HandlerConstructor[]): this {
+        this.routes = [...this.routes.filter((route) => handlers.includes(route)), ...handlers];
         return this;
     }
 
-    environment<T extends Record<PropertyKey, any>>(object: T): this {
-        this.#environment.set(object.constructor, object);
+    public environment<T extends Record<PropertyKey, any>>(object: T): this {
+        this.environmentStorage.set(object.constructor, object);
         return this;
     }
 
-    listen() {
-        return Deno.serve(this.#handler);
+    public listen() {
+        return Deno.serve(this.handler);
     }
 }
