@@ -4,9 +4,9 @@ import { HandlerConstructor } from '~/lib/private-types.ts';
 export class Server {
     private routes: HandlerConstructor[] = [];
     // deno-lint-ignore ban-types
-    private environmentStorage = new Map<Function, Record<PropertyKey, any>>();
+    private readonly environmentStorage = new Map<Function, Record<PropertyKey, any>>();
 
-    private handler = async (request: Request) => {
+    private readonly handler = async (request: Request) => {
         for (const Route of this.routes) {
             // Get the metadata for the route handler
             let metadata = new MetadataManager(Route[Symbol.metadata]);
