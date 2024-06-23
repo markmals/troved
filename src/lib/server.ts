@@ -19,7 +19,7 @@ export class Server {
                     // Pass the environment to the handler
                     metadata.environment = this.environmentStorage;
                     // Create and invoke the handler
-                    let routeHandler = new Route(request, result.pathname.groups);
+                    let routeHandler = new Route({ request, params: result.pathname.groups });
                     return await routeHandler.respond();
                 }
             }

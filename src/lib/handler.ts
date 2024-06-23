@@ -3,7 +3,19 @@ export type Params<Key extends string = string> = {
     readonly [key in Key]: string | undefined;
 };
 
+export interface HandlerOptions {
+    request: Request;
+    params: Params;
+}
+
 export abstract class Handler {
-    public constructor(public request: Request, public params: Params) {}
+    public readonly request: Request;
+    public readonly params: Params;
+
+    public constructor(options: HandlerOptions) {
+        this.request = options.request;
+        this.params = options.params;
+    }
+
     public abstract respond(): Promise<Response>;
 }

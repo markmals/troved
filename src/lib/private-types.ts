@@ -1,8 +1,8 @@
-import { Handler } from '@web/server';
+import { Handler, HandlerOptions } from '@web/server';
 import { Metadata } from './metadata.ts';
 
 export interface HandlerConstructor {
-    new (request: Request, params: Record<string, string | undefined>): Handler;
+    new (options: HandlerOptions): Handler;
     [Symbol.metadata]: Metadata | null;
 }
 
