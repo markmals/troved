@@ -1,6 +1,6 @@
-import Downpour from 'npm:downpour@0.1.1';
-import * as path from 'std/path/mod.ts';
-import { exists } from 'std/fs/mod.ts';
+import Downpour from 'downpour';
+import * as Path from 'std/path/mod.ts';
+import * as FileSystem from 'std/fs/mod.ts';
 
 export namespace Transcoder {
     export interface VideoInfo {
@@ -172,7 +172,7 @@ export namespace Transcoder {
         let videoTag = shouldConvert || isHEVC ? 'hvc1' : undefined;
 
         // Create output folders from output file path if they don't exist
-        await Deno.mkdir(path.dirname(outputPath), { recursive: true });
+        await Deno.mkdir(Path.dirname(outputPath), { recursive: true });
 
         await ffmpeg({
             input: inputPath,
@@ -204,8 +204,8 @@ export namespace Transcoder {
     }
 
     function getOutputPath(inputPath: string, tvPath: string, moviesPath: string) {
-        let ext = path.extname(inputPath);
-        let basename = path.basename(inputPath, ext);
+        let ext = Path.extname(inputPath);
+        let basename = Path.basename(inputPath, ext);
         let metadata = new Downpour(basename);
         return metadata.type === 'tv'
             ? `${tvPath}/${metadata.title}/${metadata.basicPlexName}.mp4`
@@ -221,11 +221,11 @@ export namespace Transcoder {
 
                 for (let eventPath of event.paths) {
                     // guard file exists because of a bug in Deno
-                    if (!(await exists(eventPath))) continue;
+                    if (!(await FileSystem.exists(eventPath))) continue;
                     let entry = await Deno.stat(eventPath);
 
                     // If is file and extension is mkv or mp4
-                    if (entry.isFile && EXTS.includes(path.extname(eventPath))) {
+                    if (entry.isFile && EXTS.includes(Path.extname(eventPath))) {
                         transcodeFile({
                             inputPath: eventPath,
                             outputPath: getOutputPath(eventPath, output.tv, output.movies),
