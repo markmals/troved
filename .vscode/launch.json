@@ -5,7 +5,7 @@
     "configurations": [
         {
             "request": "launch",
-            "name": "Deno: Run and Debug",
+            "name": "Deno: Debug App",
             "type": "node",
             "program": "${workspaceFolder}/src/main.ts",
             "cwd": "${workspaceFolder}",
@@ -14,7 +14,30 @@
             "runtimeArgs": [
                 "run",
                 "--inspect-wait",
-                "--allow-all"
+                "--allow-all",
+            ],
+            "attachSimplePort": 9229
+        },
+        {
+            "request": "launch",
+            "name": "Deno: Debug File",
+            "type": "node",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "runtimeExecutable": "${userHome}/.deno/bin/deno",
+            "runtimeArgs": [
+                "run",
+                "--inspect-wait",
+                "--allow-all",
+            ],
+            "args": [
+                "--watch",
+                "media/Completed",
+                "--output-tv",
+                "media/TV",
+                "--output-movies",
+                "media/Movies",
             ],
             "attachSimplePort": 9229
         }
