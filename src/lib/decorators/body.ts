@@ -11,11 +11,8 @@ export function body<Host extends Handler>(type: 'text'): ClassAccessorDecorator
 export function body<Host extends Handler>(
     type: 'blob' | 'bytes' | 'arrayBuffer' | 'text' | 'json' | 'formData',
 ): ClassAccessorDecorator<Host, Promise<any>> {
-    return makeRequestAccessorDecorator('body', function (propertyName) {
-        return (async () => {
-            const result = await this.request[type]();
-            return result;
-        })();
+    return makeRequestAccessorDecorator('body', function () {
+        return this.request[type]();
     });
 }
 
@@ -26,7 +23,7 @@ export function body<Host extends Handler>(
 //     accept: ['form'],
 //     input: z.object({ id: z.number() }),
 //     async handler({ id }, { request, params }) {
-//         const subs = await kv.get<string[]>(['subscriptions']);
+//         let subs = await kv.get<string[]>(['subscriptions']);
 //         await kv.set(['subscriptions'], [...subs.value!, id]);
 //         return Response.json({ success: true });
 //     },

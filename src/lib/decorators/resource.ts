@@ -8,7 +8,7 @@ export function resource<HandlerClass extends HandlerConstructor>(
 ): ClassDecorator<HandlerClass> {
     return (This, context) => {
         context.addInitializer(function () {
-            const metadata = new MetadataManager(This[Symbol.metadata]);
+            let metadata = new MetadataManager(This[Symbol.metadata]);
             metadata.route.pattern = new URLPattern({ pathname });
             metadata.route.method = method;
         });
