@@ -5,7 +5,7 @@ export type Params<Key extends string = string> = {
 
 export interface HandlerOptions {
     request: Request;
-    params: Params;
+    urlParams: Params;
 }
 
 export abstract class Handler {
@@ -14,7 +14,7 @@ export abstract class Handler {
 
     public constructor(options: HandlerOptions) {
         this.request = options.request;
-        this.params = options.params;
+        this.params = options.urlParams;
     }
 
     public abstract respond(): Promise<Response>;
