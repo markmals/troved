@@ -13,7 +13,8 @@
                 "no-empty",
                 "no-explicit-any",
                 "no-unused-vars",
-                "require-await"
+                "require-await",
+                "no-namespace"
             ]
         }
     },
