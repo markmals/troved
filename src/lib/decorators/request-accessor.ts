@@ -3,7 +3,7 @@ import { ClassAccessorDecorator } from '../private-types.ts';
 
 export function makeRequestAccessorDecorator<Host extends Handler, Value>(
     name: string,
-    action: (this: Host, name: string) => Value,
+    action: (this: Host, property: { name: string }) => Value,
 ): ClassAccessorDecorator<Host, Value> {
     return (_target, context) => {
         if (context.static) {
@@ -16,7 +16,7 @@ export function makeRequestAccessorDecorator<Host extends Handler, Value>(
                     throw new TypeError(`@${name}() cannot be applied to symbol-named properties.`);
                 }
 
-                return action.call(this, context.name);
+                return action.call(this, { name: context.name });
             },
         };
     };
