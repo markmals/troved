@@ -6,7 +6,10 @@ export interface Metadata {
         pattern: URLPattern;
         method: string;
     } | undefined;
-    [ENV]?: Map<any, any> | undefined;
+    [ENV]?:
+        // deno-lint-ignore ban-types
+        | Map<Function, Record<PropertyKey, any>>
+        | undefined;
 }
 
 export class MetadataManager {

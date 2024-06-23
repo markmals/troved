@@ -1,25 +1,26 @@
-import { HandlerConstructor } from './handler.ts';
 import { MetadataManager } from './metadata.ts';
+import { HandlerConstructor } from '~/lib/private-types.ts';
 
 export class Server {
-    #routes = new Map<URLPattern, HandlerConstructor>();
-    #environment = new Map<any, any>();
+    #routes: HandlerConstructor[] = [];
+    // deno-lint-ignore ban-types
+    #environment = new Map<Function, Record<PropertyKey, any>>();
 
     #handler = async (request: Request) => {
-        for (const [pattern, HandlerClass] of this.#routes) {
+        for (const Route of this.#routes) {
             // Get the metadata for the route handler
-            const metadata = new MetadataManager(HandlerClass[Symbol.metadata]);
+            const metadata = new MetadataManager(Route[Symbol.metadata]);
 
             // Find a route matching the current method
             if (metadata.route.method === request.method) {
                 // Does the handler's route pattern match the current URL?
-                const result = pattern.exec(request.url);
+                const result = metadata.route.pattern.exec(request.url);
                 if (result) {
                     // Pass the environment to the handler
                     metadata.environment = this.#environment;
                     // Create and invoke the handler
-                    const handler = new HandlerClass(request, result.pathname.groups);
-                    return await handler.respond();
+                    const routeHandler = new Route(request, result.pathname.groups);
+                    return await routeHandler.respond();
                 }
             }
         }
@@ -29,15 +30,11 @@ export class Server {
     };
 
     register(handlers: HandlerConstructor[]): this {
-        for (const HandlerClass of handlers) {
-            const metadata = new MetadataManager(HandlerClass[Symbol.metadata]);
-            this.#routes.set(metadata.route.pattern, HandlerClass);
-        }
-
+        this.#routes = [...this.#routes.filter((route) => handlers.includes(route)), ...handlers];
         return this;
     }
 
-    environment<T extends Record<string | symbol, any>>(object: T): this {
+    environment<T extends Record<PropertyKey, any>>(object: T): this {
         this.#environment.set(object.constructor, object);
         return this;
     }

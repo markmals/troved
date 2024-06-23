@@ -3,15 +3,11 @@ import { MetadataManager } from '../metadata.ts';
 import type { ClassAccessorDecorator } from '../private-types.ts';
 
 /** An accessor decorator that enables resources to access shared state */
-export function environment<ObjectClass, T extends Record<string | symbol, any>>(
+// deno-lint-ignore ban-types
+export function environment<ObjectClass extends Function, T extends Record<string | symbol, any>>(
     Object: ObjectClass,
 ): ClassAccessorDecorator<Handler, T> {
-    return (_accessor, context) => {
-        return {
-            get() {
-                const metadata = new MetadataManager(context.metadata);
-                return metadata.environment.get(Object);
-            },
-        };
+    return (_, context) => {
+        return { get: () => new MetadataManager(context.metadata).environment.get(Object)! };
     };
 }
