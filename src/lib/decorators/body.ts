@@ -11,7 +11,7 @@ export function body<Host extends Handler>(type: 'text'): ClassAccessorDecorator
 export function body<Host extends Handler>(
     type: 'blob' | 'bytes' | 'arrayBuffer' | 'text' | 'json' | 'formData',
 ): ClassAccessorDecorator<Host, Promise<any>> {
-    return makeRequestAccessorDecorator('body', function () {
+    return makeRequestAccessorDecorator(arguments.callee.name, function () {
         return this.request[type]();
     });
 }

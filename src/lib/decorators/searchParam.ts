@@ -3,7 +3,7 @@ import { makeRequestAccessorDecorator } from './request-accessor.ts';
 import { ClassAccessorDecorator } from '../private-types.ts';
 
 export function searchParam<Host extends Handler>(): ClassAccessorDecorator<Host, string> {
-    return makeRequestAccessorDecorator('searchParam', function (property) {
+    return makeRequestAccessorDecorator(arguments.callee.name, function (property) {
         let url = new URL(this.request.url);
         return url.searchParams.get(property.name)!;
     });
