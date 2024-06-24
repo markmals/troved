@@ -46,7 +46,7 @@ export class Trakt extends API {
     }
 }
 
-// import 'std/dotenv/load.ts';
+// import '@std/dotenv/load';
 // let apiKey = Deno.env.get('TRAKT_CLIENT_ID')!
 // console.log(apiKey)
 // let client = new Trakt(apiKey);

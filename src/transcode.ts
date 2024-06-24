@@ -1,4 +1,4 @@
-import { parseArgs } from 'std/cli/mod.ts';
+import { parseArgs } from '@std/cli/parse-args';
 import { Transcoder } from '~/api/transcoder.ts';
 
 let flags = parseArgs(Deno.args, {

@@ -22,10 +22,13 @@
         "serve": "deno run -A --unstable-hmr src/main.ts"
     },
     "imports": {
-        "@web/server": "./src/lib/mod.ts",
-        "std/": "https://deno.land/std@0.208.0/",
-        "tmdb": "npm:moviedb-promise@4.0.6",
+        "@std/cli": "jsr:@std/cli@^0.224.7",
+        "@std/dotenv": "jsr:@std/dotenv@^0.224.1",
+        "@std/fs": "jsr:@std/fs@^0.229.3",
+        "@std/path": "jsr:@std/path@^0.225.2",
         "downpour": "npm:downpour@0.1.1",
+        "tmdb": "npm:moviedb-promise@4.0.6",
+        "@web/server": "./src/lib/mod.ts",
         "~/": "./src/"
     }
 }

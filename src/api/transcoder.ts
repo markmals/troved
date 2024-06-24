@@ -1,6 +1,6 @@
 import Downpour from 'downpour';
-import * as Path from 'std/path/mod.ts';
-import * as FileSystem from 'std/fs/mod.ts';
+import * as Path from '@std/path';
+import * as FileSystem from '@std/fs';
 
 export namespace Transcoder {
     export interface VideoInfo {
