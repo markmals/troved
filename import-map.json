@@ -1,9 +1,0 @@
-{
-    "imports": {
-        "@web/server": "./src/lib/mod.ts",
-        "std/": "https://deno.land/std@0.208.0/",
-        "tmdb": "npm:moviedb-promise@4.0.6",
-        "downpour": "npm:downpour@0.1.1",
-        "~/": "./src/"
-    }
-}
