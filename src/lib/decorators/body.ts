@@ -29,8 +29,8 @@ export function body<Host extends Handler>(
             switch (accept) {
                 case 'formData':
                 case 'json': {
-                    let data = await this.request[accept]();
-                    let submission = parseWithZod(data, { schema });
+                    const data = await this.request[accept]();
+                    const submission = parseWithZod(data, { schema });
                     return submission;
                 }
                 default: {

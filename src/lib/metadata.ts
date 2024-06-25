@@ -13,7 +13,7 @@ export interface Metadata {
 }
 
 export class MetadataManager {
-    private metadata: Metadata;
+    private readonly metadata: Metadata;
 
     public constructor(metadata: Metadata | DecoratorMetadataObject | null) {
         this.metadata = (metadata ??= {} as Metadata) as Metadata;

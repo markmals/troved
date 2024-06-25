@@ -1,7 +1,7 @@
 import { ContentType, HttpMethod, Range, StatusError } from '@web/server';
 
 export class RequestBuilder {
-    private requestInit: RequestInit & { headers: Headers } = {
+    private readonly requestInit: RequestInit & { headers: Headers } = {
         headers: new Headers(),
     };
 
@@ -39,11 +39,11 @@ export class RequestBuilder {
     public headers(
         headers: Record<string, string> | Map<string, string> | Headers,
     ): RequestBuilder {
-        let iteratable = (headers instanceof Map || headers instanceof Headers)
+        const iteratable = (headers instanceof Map || headers instanceof Headers)
             ? headers.entries()
             : Object.entries(headers);
 
-        for (let [key, value] of iteratable) {
+        for (const [key, value] of iteratable) {
             this.requestInit.headers.set(key, value);
         }
 
@@ -73,7 +73,7 @@ export class RequestBuilder {
         query: URLSearchParams | Record<string, string | undefined>,
     ): RequestBuilder {
         for (
-            let [key, value] of query instanceof URLSearchParams ? query : Object.entries(query)
+            const [key, value] of query instanceof URLSearchParams ? query : Object.entries(query)
         ) {
             if (value) this.url.searchParams.set(key, value);
         }
@@ -81,9 +81,9 @@ export class RequestBuilder {
     }
 
     public async fetch(): Promise<Response> {
-        let response = await fetch(this.url, this.requestInit);
-        let [lower, upper] = this.statusCode;
-        let badStatus = response.status < lower || response.status > upper;
+        const response = await fetch(this.url, this.requestInit);
+        const [lower, upper] = this.statusCode;
+        const badStatus = response.status < lower || response.status > upper;
 
         if (!response.ok || badStatus) {
             throw new StatusError(response);
@@ -94,18 +94,18 @@ export class RequestBuilder {
 
     public async fetchJson<T>(): Promise<T> {
         this.accept(ContentType.Json);
-        let response = await this.fetch();
+        const response = await this.fetch();
         return await response.json();
     }
 
     public async fetchText(): Promise<string> {
-        let response = await this.fetch();
+        const response = await this.fetch();
         return await response.text();
     }
 
     public async fetchFormData(): Promise<FormData> {
         this.accept(ContentType.UrlEncoded);
-        let response = await this.fetch();
+        const response = await this.fetch();
         return await response.formData();
     }
 }

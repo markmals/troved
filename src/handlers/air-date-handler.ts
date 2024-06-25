@@ -10,7 +10,7 @@ export class AirDateHandler extends Handler {
     private accessor id!: string;
 
     public async respond() {
-        let response = await this.client.airDates({ showId: this.id });
+        const response = await this.client.airDates({ showId: this.id });
         return Response.json(response);
     }
 }

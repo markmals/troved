@@ -10,7 +10,7 @@ export class SearchHandler extends Handler {
     private accessor q!: string;
 
     public async respond() {
-        let response = await this.client.searchTv({ query: this.q });
+        const response = await this.client.searchTv({ query: this.q });
         return Response.json(
             response.results?.map(({ id, overview, name }) => ({
                 id,

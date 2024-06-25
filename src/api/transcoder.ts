@@ -73,7 +73,7 @@ export namespace Transcoder {
     }
 
     async function ffprobe({ input }: { input: string }): Promise<VideoInfo> {
-        let command = new Deno.Command('ffprobe', {
+        const command = new Deno.Command('ffprobe', {
             args: [
                 '-i',
                 input,
@@ -88,10 +88,10 @@ export namespace Transcoder {
             ],
         });
 
-        let result = await command.output();
-        let textDecoder = new TextDecoder();
+        const result = await command.output();
+        const textDecoder = new TextDecoder();
 
-        let error = textDecoder.decode(result.stderr);
+        const error = textDecoder.decode(result.stderr);
         if (error) throw new Error(error);
 
         return JSON.parse(textDecoder.decode(result.stdout));
@@ -110,9 +110,9 @@ export namespace Transcoder {
     }
 
     async function ffmpeg(options: FFmpegOptions) {
-        let tag = options.videoTag !== undefined ? ['-tag:v', options.videoTag] : [];
+        const tag = options.videoTag !== undefined ? ['-tag:v', options.videoTag] : [];
 
-        let command = new Deno.Command('ffmpeg', {
+        const command = new Deno.Command('ffmpeg', {
             args: [
                 '-i',
                 options.input,
@@ -142,9 +142,9 @@ export namespace Transcoder {
         });
 
         await command.output();
-        // let textDecoder = new TextDecoder();
+        // const textDecoder = new TextDecoder();
 
-        // let output = textDecoder.decode(result.stderr);
+        // const output = textDecoder.decode(result.stderr);
         // if (error) throw new Error(error);
     }
 
@@ -161,15 +161,15 @@ export namespace Transcoder {
     export async function transcodeFile(
         { inputPath, outputPath, quality = 23, audioBitrate = '320k', forceHEVC = false }: TranscodeFileOptions,
     ) {
-        let info = await ffprobe({ input: inputPath });
-        let video = info.streams.find((stream) => stream.codec_type === 'video')!;
+        const info = await ffprobe({ input: inputPath });
+        const video = info.streams.find((stream) => stream.codec_type === 'video')!;
 
-        let shouldConvert = video.codec_name === 'h264' && forceHEVC;
-        let isHEVC = video.codec_name === 'hevc';
+        const shouldConvert = video.codec_name === 'h264' && forceHEVC;
+        const isHEVC = video.codec_name === 'hevc';
 
-        let videoCodec = shouldConvert ? 'libx265' : 'copy';
-        let audioCodec = shouldConvert ? 'eac3' : 'copy';
-        let videoTag = shouldConvert || isHEVC ? 'hvc1' : undefined;
+        const videoCodec = shouldConvert ? 'libx265' : 'copy';
+        const audioCodec = shouldConvert ? 'eac3' : 'copy';
+        const videoTag = shouldConvert || isHEVC ? 'hvc1' : undefined;
 
         // Create output folders from output file path if they don't exist
         await Deno.mkdir(Path.dirname(outputPath), { recursive: true });
@@ -204,25 +204,25 @@ export namespace Transcoder {
     }
 
     function getOutputPath(inputPath: string, tvPath: string, moviesPath: string) {
-        let ext = Path.extname(inputPath);
-        let basename = Path.basename(inputPath, ext);
-        let metadata = new Downpour(basename);
+        const ext = Path.extname(inputPath);
+        const basename = Path.basename(inputPath, ext);
+        const metadata = new Downpour(basename);
         return metadata.type === 'tv'
             ? `${tvPath}/${metadata.title}/${metadata.basicPlexName}.mp4`
             : `${moviesPath}/${metadata.basicPlexName}.mp4`;
     }
 
     export function watch({ input, output, quality, audioBitrate, forceHEVC }: WatchOptions) {
-        let watcher = Deno.watchFs(input);
+        const watcher = Deno.watchFs(input);
 
         async function startWatching() {
-            for await (let event of watcher) {
+            for await (const event of watcher) {
                 if (event.kind !== 'create') continue;
 
-                for (let eventPath of event.paths) {
+                for (const eventPath of event.paths) {
                     // guard file exists because of a bug in Deno
                     if (!(await FileSystem.exists(eventPath))) continue;
-                    let entry = await Deno.stat(eventPath);
+                    const entry = await Deno.stat(eventPath);
 
                     // If is file and extension is mkv or mp4
                     if (entry.isFile && EXTS.includes(Path.extname(eventPath))) {

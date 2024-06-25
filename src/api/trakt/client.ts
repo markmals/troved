@@ -27,7 +27,7 @@ export class Trakt extends API {
             type: 'movie' | 'show';
         },
     ) {
-        let searchEndpoint = options.id ? `tmdb/${options.id}` : '';
+        const searchEndpoint = options.id ? `tmdb/${options.id}` : '';
         return await this.get(`search/${searchEndpoint}`)
             .searchParams({ query: options.query, type: options.type })
             .fetchJson<Result[]>();
@@ -47,7 +47,7 @@ export class Trakt extends API {
 }
 
 // import '@std/dotenv/load';
-// let apiKey = Deno.env.get('TRAKT_CLIENT_ID')!
+// const apiKey = Deno.env.get('TRAKT_CLIENT_ID')!
 // console.log(apiKey)
-// let client = new Trakt(apiKey);
+// const client = new Trakt(apiKey);
 // console.log((await client.search({ query: 'Breaking Bad', type: 'show' }))[0]);
