@@ -1,62 +1,106 @@
-import { MetadataManager } from './metadata.ts';
-import { HandlerConstructor } from '~/lib/private-types.ts';
+import { walk } from '@std/fs';
+import { globToRegExp } from '@std/path';
+import { parseWithZod } from 'conform';
+import { Route, z } from '~/lib/mod.ts';
 
-export class Server {
-    private readonly adapter: Server.Adapter;
-    private routes: HandlerConstructor[] = [];
-    // deno-lint-ignore ban-types
-    private readonly environmentStorage = new Map<Function, Record<PropertyKey, any>>();
+async function importGlob<T = any>(pattern: string): Promise<T[]> {
+    let glob = globToRegExp(pattern);
+    let walker = walk('.', { match: [glob] });
 
-    private readonly handler = async (request: Request) => {
-        for (const RouteHandler of this.routes) {
-            // Get the metadata for the route handler
-            const metadata = new MetadataManager(RouteHandler[Symbol.metadata]);
+    let imports = [];
 
-            // Find a route matching the current method
-            if (metadata.route.method === request.method) {
-                // Does the handler's route pattern match the current URL?
-                const result = metadata.route.pattern.exec(request.url);
-                if (result) {
-                    // Pass the environment to the handler
-                    metadata.environment = this.environmentStorage;
-                    // Create and invoke the handler
-                    const routeHandler = new RouteHandler({ request, urlParams: result.pathname.groups });
-                    return await routeHandler.respond();
-                }
-            }
+    for await (let file of walker) {
+        let i = await import(file.path);
+        imports.push(i);
+    }
+
+    return imports;
+}
+
+function validateSearchParams(route: Route, request: Request) {
+    let url = new URL(request.url);
+    let searchParamsSchema = route.searchParams?.schema;
+
+    return searchParamsSchema
+        ? parseWithZod(url.searchParams, { schema: z.object(searchParamsSchema) })
+        : url.searchParams;
+}
+
+async function validateBody(route: Route, request: Request) {
+    let body: any;
+
+    switch (route.body?.accept) {
+        case 'formData': {
+            body = parseWithZod(await request.formData(), { schema: route.body.schema });
+            break;
         }
+        case 'json': {
+            body = (route.body.schema as z.ZodType).parse(await request.json());
+            break;
+        }
+        case 'text': {
+            body = await request.text();
+            break;
+        }
+        case 'arrayBuffer': {
+            body = await request.arrayBuffer();
+            break;
+        }
+        case 'blob': {
+            body = await request.blob();
+            break;
+        }
+        case 'bytes':
+        default: {
+            body = await request.bytes();
+        }
+    }
 
-        // No matching route handler found
-        return new Response(null, { status: 404 });
+    return body;
+}
+
+export async function createServer({ adapter, routesGlob = './src/routes/**/*.ts' }: Server.Options) {
+    let routes = (await importGlob<{ default: Route }>(routesGlob)).map((module) => module.default);
+
+    const handler = async (request: Request) => {
+        // Get the first matching route
+        let match = routes
+            .filter((route) => route.method === request.method)
+            .map((route) => {
+                let pattern = new URLPattern({ pathname: route.path });
+                let result = pattern.exec(request.url);
+                return { route, result };
+            })
+            .filter(({ result }) => result !== null)
+            .sort((lhs, rhs) => lhs.route.path.localeCompare(rhs.route.path))[0];
+
+        // No matching route found
+        if (!match) return new Response(null, { status: 404 });
+
+        return await match.route.handler({
+            request,
+            urlParams: match.result!.pathname.groups,
+            searchParams: validateSearchParams(match.route, request),
+            body: await validateBody(match.route, request),
+        });
     };
 
-    public constructor({ adapter }: Server.Options) {
-        this.adapter = adapter;
-    }
-
-    public register(handlers: HandlerConstructor[]): this {
-        this.routes = [...this.routes.filter((route) => handlers.includes(route)), ...handlers];
-        return this;
-    }
-
-    public environment<T extends Record<PropertyKey, any>>(object: T): this {
-        this.environmentStorage.set(object.constructor, object);
-        return this;
-    }
-
-    public async listen() {
-        return await this.adapter.listen(this.handler);
-    }
+    return {
+        async listen() {
+            return await adapter.listen(handler);
+        },
+    };
 }
 
 export namespace Server {
     export interface Options {
         adapter: Adapter;
+        routesGlob?: string;
     }
 
     export interface Adapter {
-        listen(handler: Server.HandlerClosure): Promise<void> | void;
+        listen(handler: Server.Handler): Promise<void> | void;
     }
 
-    export type HandlerClosure = (request: Request) => Promise<Response>;
+    export type Handler = (request: Request) => Promise<Response>;
 }

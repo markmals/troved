@@ -1,4 +1,4 @@
-import { ContentType, HttpMethod, Range, StatusError } from '@web/server';
+import { ContentType, HttpMethod, Range, StatusError } from './types.ts';
 
 export class RequestBuilder {
     private readonly requestInit: RequestInit & { headers: Headers } = {
@@ -12,13 +12,13 @@ export class RequestBuilder {
     }
 
     /** Adds the Accept content type to the request. */
-    public accept(contentType: ContentType): RequestBuilder {
+    public accept(contentType: typeof ContentType[keyof typeof ContentType]): RequestBuilder {
         this.requestInit.headers.set('Accept', contentType);
         return this;
     }
 
     /** Adds the Content-Type to the request. */
-    public contentType(contentType: ContentType): RequestBuilder {
+    public contentType(contentType: typeof ContentType[keyof typeof ContentType]): RequestBuilder {
         this.requestInit.headers.set('Content-Type', contentType);
         return this;
     }
