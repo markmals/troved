@@ -1,15 +1,14 @@
-import { body, BodyData, Handler, HttpMethod, resource } from '@web/server';
-import { z } from 'npm:zod@3.23.8';
+import { body, BodyData, Handler, HttpMethod, resource, validation as v } from '@web/server';
 
 @resource('/subscribe', HttpMethod.Post)
 export class SubscriptionHandler extends Handler {
-    private static readonly schema = z.object({ id: z.number() });
+    private static readonly schema = v.object({ id: v.number() });
 
     @body({ accept: 'formData', input: SubscriptionHandler.schema })
-    private accessor form!: BodyData<typeof SubscriptionHandler.schema>;
+    private accessor bodyData!: BodyData<typeof SubscriptionHandler.schema>;
 
     public async respond() {
-        const bodyData = await this.form;
-        return Response.json(bodyData);
+        const data = await this.bodyData;
+        return Response.json(data);
     }
 }

@@ -1,8 +1,8 @@
 import { Handler } from '../handler.ts';
 import { makeRequestAccessorDecorator } from './request-accessor.ts';
 import { ClassAccessorDecorator } from '../private-types.ts';
-import { parseWithZod } from 'npm:@conform-to/zod@1.1.5';
-import z from 'npm:zod@3.23.8';
+import { parseWithZod } from 'conform';
+import z from 'zod';
 
 export function body<Host extends Handler>(
     options: { accept: 'arrayBuffer' },

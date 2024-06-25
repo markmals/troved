@@ -29,6 +29,8 @@
         "fetch-event-adapter": "https://deno.land/x/fetch_event_adapter@v1.0.5/listen.ts",
         "downpour": "npm:downpour@0.1.1",
         "tmdb": "npm:moviedb-promise@4.0.6",
+        "zod": "npm:zod@3.23.8",
+        "conform": "npm:@conform-to/zod@1.1.5",
         "@web/server": "./src/lib/mod.ts",
         "~/": "./src/"
     }
