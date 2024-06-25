@@ -1,16 +1,19 @@
 import { walk } from '@std/fs';
 import { globToRegExp } from '@std/path';
-import { parseWithZod } from 'conform';
-import { Route, z } from '~/lib/mod.ts';
+import { Route } from '~/lib/mod.ts';
+import { validateBody, validateSearchParams } from '~/lib/validation.ts';
 
-async function importGlob<T = any>(pattern: string): Promise<T[]> {
-    // let glob = globToRegExp(pattern, { globstar: true });
-    let walker = walk('./src/routes' /*, { match: [glob] }*/);
+async function globImport<T = any>(pattern: string): Promise<T[]> {
+    let pathComponents = pattern.split('/');
+    let directory = `${pathComponents[0]}/`;
+    let glob = pathComponents.slice(1).join('/');
+
+    let globRegex = globToRegExp(glob, { globstar: true });
+    let walker = walk(directory, { match: [globRegex] });
 
     let imports = [];
 
     for await (let file of walker) {
-        if (file.path === 'src/routes') continue;
         let i = await import(`../../${file.path}`);
         imports.push(i);
     }
@@ -18,50 +21,8 @@ async function importGlob<T = any>(pattern: string): Promise<T[]> {
     return imports;
 }
 
-function validateSearchParams(route: Route, request: Request) {
-    let url = new URL(request.url);
-    let searchParamsSchema = route.searchParams?.schema;
-
-    return searchParamsSchema
-        ? parseWithZod(url.searchParams, { schema: z.object(searchParamsSchema) }).value
-        : url.searchParams;
-}
-
-async function validateBody(route: Route, request: Request) {
-    let body: any;
-
-    switch (route.body?.accept) {
-        case 'formData': {
-            body = parseWithZod(await request.formData(), { schema: route.body.schema }).value;
-            break;
-        }
-        case 'json': {
-            body = (route.body.schema as z.ZodType).parse(await request.json());
-            break;
-        }
-        case 'text': {
-            body = await request.text();
-            break;
-        }
-        case 'arrayBuffer': {
-            body = await request.arrayBuffer();
-            break;
-        }
-        case 'blob': {
-            body = await request.blob();
-            break;
-        }
-        case 'bytes':
-        default: {
-            body = await request.bytes();
-        }
-    }
-
-    return body;
-}
-
 export async function createServer({ adapter, routesGlob = './src/routes/**/*.ts' }: Server.Options) {
-    let routes = (await importGlob<{ default: Route }>(routesGlob)).map((module) => module.default);
+    let routes = (await globImport<{ default: Route }>(routesGlob)).map((module) => module.default);
 
     const handler = async (request: Request) => {
         // Get the first matching route
