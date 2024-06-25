@@ -4,13 +4,14 @@ import { parseWithZod } from 'conform';
 import { Route, z } from '~/lib/mod.ts';
 
 async function importGlob<T = any>(pattern: string): Promise<T[]> {
-    let glob = globToRegExp(pattern);
-    let walker = walk('.', { match: [glob] });
+    // let glob = globToRegExp(pattern, { globstar: true });
+    let walker = walk('./src/routes' /*, { match: [glob] }*/);
 
     let imports = [];
 
     for await (let file of walker) {
-        let i = await import(file.path);
+        if (file.path === 'src/routes') continue;
+        let i = await import(`../../${file.path}`);
         imports.push(i);
     }
 
@@ -22,7 +23,7 @@ function validateSearchParams(route: Route, request: Request) {
     let searchParamsSchema = route.searchParams?.schema;
 
     return searchParamsSchema
-        ? parseWithZod(url.searchParams, { schema: z.object(searchParamsSchema) })
+        ? parseWithZod(url.searchParams, { schema: z.object(searchParamsSchema) }).value
         : url.searchParams;
 }
 
@@ -31,7 +32,7 @@ async function validateBody(route: Route, request: Request) {
 
     switch (route.body?.accept) {
         case 'formData': {
-            body = parseWithZod(await request.formData(), { schema: route.body.schema });
+            body = parseWithZod(await request.formData(), { schema: route.body.schema }).value;
             break;
         }
         case 'json': {
