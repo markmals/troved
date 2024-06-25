@@ -2,6 +2,7 @@ import { MetadataManager } from './metadata.ts';
 import { HandlerConstructor } from '~/lib/private-types.ts';
 
 export class Server {
+    private readonly adapter: Server.Adapter;
     private routes: HandlerConstructor[] = [];
     // deno-lint-ignore ban-types
     private readonly environmentStorage = new Map<Function, Record<PropertyKey, any>>();
@@ -29,6 +30,10 @@ export class Server {
         return new Response(null, { status: 404 });
     };
 
+    public constructor({ adapter }: Server.Options) {
+        this.adapter = adapter;
+    }
+
     public register(handlers: HandlerConstructor[]): this {
         this.routes = [...this.routes.filter((route) => handlers.includes(route)), ...handlers];
         return this;
@@ -39,7 +44,19 @@ export class Server {
         return this;
     }
 
-    public listen() {
-        return Deno.serve(this.handler);
+    public async listen() {
+        return await this.adapter.listen(this.handler);
     }
+}
+
+export namespace Server {
+    export interface Options {
+        adapter: Adapter;
+    }
+
+    export interface Adapter {
+        listen(handler: Server.HandlerClosure): Promise<void> | void;
+    }
+
+    export type HandlerClosure = (request: Request) => Promise<Response>;
 }

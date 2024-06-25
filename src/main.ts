@@ -1,24 +1,13 @@
 import { Server } from '@web/server';
+import { DenoAdapter } from '~/lib/adapters/deno-adapter.ts';
 import { AirDateHandler, SearchHandler, SubscriptionHandler } from '~/handlers/mod.ts';
 
 import '@std/dotenv/load';
 
-new Server()
+await new Server({ adapter: new DenoAdapter() })
     .register([
-        // new Group('/foo', [
-        //     FooHandler,
-        //     BarHandler,
-        //     // /foo/baz
-        //     new Group('/baz', [
-        //         BazHandler,
-        //         BaxHandler,
-        //     ])
-        //         .environment(new BaxClient()),
-        // ])
-        //     .environment(new BarClient()),
         SearchHandler,
         AirDateHandler,
         SubscriptionHandler,
     ])
-    // .environment(new Database())
     .listen();
