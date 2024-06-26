@@ -1,28 +1,15 @@
-import { walk } from '@std/fs';
-import { globToRegExp } from '@std/path';
 import { Route } from '~/lib/mod.ts';
 import { validateBody, validateSearchParams } from '~/lib/validation.ts';
+import './import-glob.ts';
 
-async function globImport<T = any>(pattern: string): Promise<T[]> {
-    let pathComponents = pattern.split('/');
-    let directory = `${pathComponents[0]}/`;
-    let glob = pathComponents.slice(1).join('/');
-
-    let globRegex = globToRegExp(glob, { globstar: true });
-    let walker = walk(directory, { match: [globRegex] });
-
-    let imports = [];
-
-    for await (let file of walker) {
-        let i = await import(`../../${file.path}`);
-        imports.push(i);
-    }
-
-    return imports;
-}
-
-export async function createServer({ adapter, routesGlob = './src/routes/**/*.ts' }: Server.Options) {
-    let routes = (await globImport<{ default: Route }>(routesGlob)).map((module) => module.default);
+export async function createServer({ adapter, routesGlob = './src/routes/**/*.ts' }: Server.Options): Promise<Server> {
+    // FIXME: The second generic argument should be able to be inferred from `import`
+    let routeImports = import.meta.glob<{ default: Route }, 'default'>(routesGlob, { import: 'default' });
+    let routes = await Promise.all(
+        Object.entries(routeImports).map(
+            async ([, route]) => await route(),
+        ),
+    );
 
     const handler = async (request: Request) => {
         // Get the first matching route
@@ -52,6 +39,10 @@ export async function createServer({ adapter, routesGlob = './src/routes/**/*.ts
             return await adapter.listen(handler);
         },
     };
+}
+
+export interface Server {
+    listen(): Promise<void>;
 }
 
 export namespace Server {
