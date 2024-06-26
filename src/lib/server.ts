@@ -1,10 +1,10 @@
 import { Route } from '~/lib/mod.ts';
 import { validateBody, validateSearchParams } from '~/lib/validation.ts';
-import './import-glob.ts';
+import { globImport } from './import-glob.ts';
 
 export async function createServer({ adapter, routesGlob = './src/routes/**/*.ts' }: Server.Options): Promise<Server> {
     // FIXME: The second generic argument should be able to be inferred from `import`
-    let routeImports = import.meta.glob<{ default: Route }, 'default'>(routesGlob, { import: 'default' });
+    let routeImports = globImport<{ default: Route }, 'default'>(routesGlob, { import: 'default' });
     let routes = await Promise.all(
         Object.entries(routeImports).map(
             async ([, route]) => await route(),

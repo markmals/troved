@@ -8,24 +8,11 @@ export interface ImportGlobOptions<Key extends string> {
 
 type Selector<Module, Key> = Key extends keyof Module ? Module[Key] : Module;
 
-export interface ImportGlobFunction {
-    /** Import a list of files with a glob pattern. */
-    <Module, Key extends string>(
-        glob: string,
-        options?: ImportGlobOptions<Key>,
-    ): Record<string, () => Promise<Selector<Module, Key>>>;
-}
-
-declare global {
-    interface ImportMeta {
-        glob: ImportGlobFunction;
-    }
-}
-
-import.meta.glob = (<Module, Key extends string>(
+/** Import a list of files with a glob pattern. */
+export function globImport<Module, Key extends string>(
     glob: string,
     { import: namedImport }: ImportGlobOptions<Key> = {},
-) => {
+): Record<string, () => Promise<Selector<Module, Key>>> {
     let pathComponents = glob.split('/');
     let directory = `${pathComponents[0]}/`;
     let g = pathComponents.slice(1).join('/');
@@ -45,4 +32,4 @@ import.meta.glob = (<Module, Key extends string>(
         accumulator[currentValue.path] = () => import(`../../${currentValue.path}`);
         return accumulator;
     }, {} as Record<string, () => Promise<Selector<Module, Key>>>);
-}) as ImportGlobFunction;
+}
