@@ -16,15 +16,20 @@ export async function createServer({ adapter, routesGlob = './src/routes/**/*.ts
         let match = routes
             .map((route) => {
                 let result = route.pattern.exec(request.url);
+
                 return {
                     route,
-                    result,
+                    urlMatchesRequest: result !== null,
                     get urlParams() {
-                        return this.result?.pathname.groups ?? {};
+                        if (result === null) {
+                            throw new Error('Cannot get URL parameters for non-matching URL');
+                        }
+
+                        return result.pathname.groups;
                     },
                 };
             })
-            .filter(({ result }) => result !== null)
+            .filter(({ urlMatchesRequest }) => urlMatchesRequest)
             .filter(({ route }) => route.method === request.method)
             .sort((lhs, rhs) => lhs.route.path.localeCompare(rhs.route.path))[0];
 
