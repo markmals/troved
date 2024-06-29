@@ -1,6 +1,6 @@
-import { defineRoute, HttpMethod, z } from '@web/server';
+import { createRoute, HttpMethod, z } from '@web/server';
 
-export default defineRoute({
+export default createRoute({
     path: '/subscribe',
     method: HttpMethod.Post,
 

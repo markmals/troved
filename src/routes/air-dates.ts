@@ -1,9 +1,9 @@
-import { defineRoute, HttpMethod, z } from '@web/server';
+import { createRoute, HttpMethod, z } from '@web/server';
 import { Trakt } from '../api/trakt/client.ts';
 
 const TRAKT_API_KEY = Deno.env.get('TRAKT_CLIENT_ID')!;
 
-export default defineRoute({
+export default createRoute({
     path: '/air-dates',
     method: HttpMethod.Get,
 

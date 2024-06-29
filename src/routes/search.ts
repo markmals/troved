@@ -1,9 +1,9 @@
-import { defineRoute, HttpMethod, z } from '@web/server';
+import { createRoute, HttpMethod, Route, z } from '@web/server';
 import { MovieDb as TheMovieDB } from 'tmdb';
 
 const TMDB_API_KEY = Deno.env.get('TMDB_API_KEY')!;
 
-export default defineRoute({
+export default createRoute({
     path: '/search',
     method: HttpMethod.Get,
 

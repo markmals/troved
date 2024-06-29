@@ -1,26 +1,31 @@
-import { Route } from '~/lib/mod.ts';
+import { RouteModule } from '~/lib/mod.ts';
 import { validateBody, validateSearchParams } from '~/lib/validation.ts';
 import { globImport } from './import-glob.ts';
 
 export async function createServer({ adapter, routesGlob = './src/routes/**/*.ts' }: Server.Options): Promise<Server> {
     // FIXME: The second generic argument should be able to be inferred from `import`
-    let routeImports = globImport<{ default: Route }, 'default'>(routesGlob, { import: 'default' });
+    let routeImports = globImport<RouteModule, 'default'>(routesGlob, {
+        import: 'default',
+    });
     let routes = await Promise.all(
-        Object.entries(routeImports).map(
-            async ([, route]) => await route(),
-        ),
+        Object.entries(routeImports).map(async ([, route]) => await route()),
     );
 
     const handler = async (request: Request) => {
         // Get the first matching route
         let match = routes
-            .filter((route) => route.method === request.method)
             .map((route) => {
-                let pattern = new URLPattern({ pathname: route.path });
-                let result = pattern.exec(request.url);
-                return { route, result };
+                let result = route.pattern.exec(request.url);
+                return {
+                    route,
+                    result,
+                    get urlParams() {
+                        return this.result?.pathname.groups ?? {};
+                    },
+                };
             })
             .filter(({ result }) => result !== null)
+            .filter(({ route }) => route.method === request.method)
             .sort((lhs, rhs) => lhs.route.path.localeCompare(rhs.route.path))[0];
 
         // No matching route found
@@ -28,7 +33,8 @@ export async function createServer({ adapter, routesGlob = './src/routes/**/*.ts
 
         return await match.route.handler({
             request,
-            urlParams: match.result!.pathname.groups,
+            // TODO: Validate URL Params
+            urlParams: match.urlParams,
             searchParams: validateSearchParams(match.route, request),
             body: await validateBody(match.route, request),
         });

@@ -1,7 +1,7 @@
 import { parseWithZod } from 'conform';
 import { type Route, z } from '~/lib/mod.ts';
 
-export function validateSearchParams(route: Route, request: Request) {
+export function validateSearchParams(route: Route, request: Request): URLSearchParams | Record<string, any> {
     let url = new URL(request.url);
     let searchParamsSchema = route.searchParams?.schema;
 
