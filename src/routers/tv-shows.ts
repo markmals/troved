@@ -7,7 +7,7 @@ const TMDB_API_KEY = Deno.env.get('TMDB_API_KEY')!;
 const TRAKT_API_KEY = Deno.env.get('TRAKT_CLIENT_ID')!;
 
 namespace Schema {
-    export namespace tvSearchResult {
+    export namespace TVSearchResult {
         export const input = z.object({ query: z.string() });
         export const output = z.array(
             z.object({
@@ -18,7 +18,7 @@ namespace Schema {
         );
     }
 
-    export namespace airDate {
+    export namespace AirDate {
         export const input = z.object({ showId: z.number() });
         export const output = z.object({
             day: z.string(),
@@ -27,7 +27,7 @@ namespace Schema {
         });
     }
 
-    export namespace subscribe {
+    export namespace Subscribe {
         export const input = z.object({ showId: z.number() });
     }
 }
@@ -35,8 +35,8 @@ namespace Schema {
 export const tvShowsRouter = trpc.router({
     search: trpc.procedure
         .meta({ openapi: { method: 'GET', path: '/search' } })
-        .input(Schema.tvSearchResult.input)
-        .output(Schema.tvSearchResult.output)
+        .input(Schema.TVSearchResult.input)
+        .output(Schema.TVSearchResult.output)
         .query(async ({ input: { query } }) => {
             const client = new TheMovieDB(TMDB_API_KEY);
             const response = await client.searchTv({ query });
@@ -48,15 +48,15 @@ export const tvShowsRouter = trpc.router({
         }),
     airDate: trpc.procedure
         .meta({ openapi: { method: 'GET', path: '/air-date' } })
-        .input(Schema.airDate.input)
-        .output(Schema.airDate.output)
+        .input(Schema.AirDate.input)
+        .output(Schema.AirDate.output)
         .query(async ({ input: { showId } }) => {
             const client = new Trakt(TRAKT_API_KEY);
             return await client.airDates({ showId });
         }),
     subscribe: trpc.procedure
         .meta({ openapi: { method: 'POST', path: '/subscribe' } })
-        .input(Schema.subscribe.input)
+        .input(Schema.Subscribe.input)
         .mutation(async ({ input: { showId } }) => {
             console.log(showId);
         }),
