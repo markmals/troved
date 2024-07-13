@@ -23,6 +23,7 @@
     },
     "imports": {
         "@trpc/server": "npm:@trpc/server@11.0.0-rc.461",
+        "trpc-openapi": "npm:trpc-openapi@1.1.0",
         "zod": "npm:zod@3.23.8",
         "resty": "./src/lib/resty/resty.ts",
         // "resty": "npm:resty-js@0.1.0",
