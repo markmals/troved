@@ -1,4 +1,4 @@
-import { ContentType, HttpMethod, Range, StatusError } from './types.ts';
+import { ContentType, HttpMethod, Range, StatusError } from '../resty/types.ts';
 
 export class RequestBuilder {
     private readonly requestInit: RequestInit & { headers: Headers } = {

@@ -1,7 +1,3 @@
-import { createDenoAdapter, createServer } from '@web/server';
-import '@std/dotenv/load';
+import { handler } from './server/handler.ts';
 
-let adapter = createDenoAdapter();
-let server = await createServer({ adapter });
-
-await server.listen();
+Deno.serve(handler);

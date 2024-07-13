@@ -1,5 +1,5 @@
-import { API } from '@web/server';
-import { MovieSearchResult, SearchResult, ShowSearchResult } from './models/search-result.ts';
+import { API } from 'resty';
+import { MovieSearchResult, SearchResult, ShowSearchResult } from './search-result.ts';
 
 export interface TraktAirDate {
     airs: {
@@ -33,7 +33,7 @@ export class Trakt extends API {
             .fetchJson<Result[]>();
     }
 
-    public async airDates({ showId }: { showId: string }) {
+    public async airDates({ showId }: { showId: number }) {
         return await this.get(`shows/${showId}`)
             .searchParams({ extended: 'full' })
             .fetchJson<TraktAirDate>()

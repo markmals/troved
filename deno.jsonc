@@ -22,16 +22,17 @@
         "serve": "deno run -A --unstable-hmr src/main.ts"
     },
     "imports": {
+        "@trpc/server": "npm:@trpc/server@11.0.0-rc.461",
+        "zod": "npm:zod@3.23.8",
+        "resty": "./src/lib/resty/resty.ts",
+        // "resty": "npm:resty-js@0.1.0",
+
+        "downpour": "npm:downpour@0.1.1",
+        "tmdb": "npm:moviedb-promise@4.0.6",
+
         "@std/cli": "jsr:@std/cli@^0.224.7",
         "@std/dotenv": "jsr:@std/dotenv@^0.224.1",
         "@std/fs": "jsr:@std/fs@^0.229.3",
-        "@std/path": "jsr:@std/path@^0.225.2",
-        "fetch-event-adapter": "https://deno.land/x/fetch_event_adapter@v1.0.5/listen.ts",
-        "downpour": "npm:downpour@0.1.1",
-        "tmdb": "npm:moviedb-promise@4.0.6",
-        "zod": "npm:zod@3.23.8",
-        "conform": "npm:@conform-to/zod@1.1.5",
-        "@web/server": "./src/lib/mod.ts",
-        "~/": "./src/"
+        "@std/path": "jsr:@std/path@^0.225.2"
     }
 }
