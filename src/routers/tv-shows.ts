@@ -10,7 +10,12 @@ const TRAKT_API_KEY = Deno.env.get('TRAKT_CLIENT_ID')!;
 export const tvShowsRouter = trpc.router({
     search: trpc.procedure
         .input(z.object({ query: z.string() }))
-        .query<TVSearchResult[]>(async ({ input: { query } }) => {
+        .output(
+            z.array(
+                z.object({ id: z.number().optional(), overview: z.string().optional(), name: z.string().optional() }),
+            ),
+        )
+        .query(async ({ input: { query } }) => {
             const client = new TheMovieDB(TMDB_API_KEY);
             const response = await client.searchTv({ query });
             return response.results?.map(({ id, overview, name }) => ({
@@ -21,7 +26,8 @@ export const tvShowsRouter = trpc.router({
         }),
     airDate: trpc.procedure
         .input(z.object({ showId: z.number() }))
-        .query<AirDate>(async ({ input: { showId } }) => {
+        .output(z.object({ day: z.string(), time: z.string(), timezone: z.string() }))
+        .query(async ({ input: { showId } }) => {
             const client = new Trakt(TRAKT_API_KEY);
             return await client.airDates({ showId });
         }),
