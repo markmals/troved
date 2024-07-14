@@ -1,5 +1,24 @@
 {
     "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+    "imports": {
+        "@trpc/server": "npm:@trpc/server@11.0.0-rc.461",
+        "trpc-openapi": "npm:trpc-openapi@1.1.0",
+        "@zod/core": "npm:zod@3.23.8",
+        "@zod/form-data": "npm:zod-form-data@2.0.2",
+        "resty": "./src/lib/resty/resty.ts",
+        // "resty": "npm:resty-js@0.1.0",
+
+        "downpour": "npm:downpour@0.1.1",
+        "tmdb": "npm:moviedb-promise@4.0.6",
+
+        "@std/cli": "jsr:@std/cli@^0.224.7",
+        "@std/dotenv": "jsr:@std/dotenv@^0.224.1",
+        "@std/fs": "jsr:@std/fs@^0.229.3",
+        "@std/path": "jsr:@std/path@^0.225.2"
+    },
+    "tasks": {
+        "serve": "deno run -A --unstable-hmr src/main.ts"
+    },
     "fmt": {
         "indentWidth": 4,
         "lineWidth": 120,
@@ -17,23 +36,5 @@
                 "no-namespace"
             ]
         }
-    },
-    "tasks": {
-        "serve": "deno run -A --unstable-hmr src/main.ts"
-    },
-    "imports": {
-        "@trpc/server": "npm:@trpc/server@11.0.0-rc.461",
-        "trpc-openapi": "npm:trpc-openapi@1.1.0",
-        "zod": "npm:zod@3.23.8",
-        "resty": "./src/lib/resty/resty.ts",
-        // "resty": "npm:resty-js@0.1.0",
-
-        "downpour": "npm:downpour@0.1.1",
-        "tmdb": "npm:moviedb-promise@4.0.6",
-
-        "@std/cli": "jsr:@std/cli@^0.224.7",
-        "@std/dotenv": "jsr:@std/dotenv@^0.224.1",
-        "@std/fs": "jsr:@std/fs@^0.229.3",
-        "@std/path": "jsr:@std/path@^0.225.2"
     }
 }

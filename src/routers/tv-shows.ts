@@ -1,5 +1,6 @@
 import { trpc } from '../server/trpc.ts';
-import { z } from 'zod';
+import { z } from '@zod/core';
+import { zfd } from '@zod/form-data';
 import { MovieDb as TheMovieDB } from 'tmdb';
 import { Trakt } from '../lib/trakt/client.ts';
 
@@ -28,7 +29,9 @@ namespace Schema {
     }
 
     export namespace Subscribe {
-        export const input = z.object({ showId: z.number() });
+        export const input = zfd.formData({
+            showId: zfd.numeric(z.number()),
+        });
     }
 }
 
@@ -57,7 +60,9 @@ export const tvShowsRouter = trpc.router({
     subscribe: trpc.procedure
         .meta({ openapi: { method: 'POST', path: '/subscribe' } })
         .input(Schema.Subscribe.input)
-        .mutation(async ({ input: { showId } }) => {
+        // FIXME: These types should be inferred
+        // Following the example from: https://github.com/trpc/trpc/tree/next/examples/next-formdata
+        .mutation(async ({ input: { showId } }: { input: any }) => {
             console.log(showId);
         }),
 });
