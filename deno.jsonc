@@ -19,19 +19,21 @@
         }
     },
     "tasks": {
-        "serve": "deno run -A --unstable-hmr src/main.ts"
+        "serve": "deno run -A --unstable-hmr src/main.ts",
+        "generate": "deno run --allow-read --allow-write --allow-env npm:openapi-typescript ./src/api/openapi.jsonc -o ./src/api/api.d.ts"
     },
     "imports": {
         "@std/cli": "jsr:@std/cli@^0.224.7",
         "@std/dotenv": "jsr:@std/dotenv@^0.224.1",
         "@std/fs": "jsr:@std/fs@^0.229.3",
         "@std/path": "jsr:@std/path@^0.225.2",
-        "fetch-event-adapter": "https://deno.land/x/fetch_event_adapter@v1.0.5/listen.ts",
         "downpour": "npm:downpour@0.1.1",
-        "tmdb": "npm:moviedb-promise@4.0.6",
-        "zod": "npm:zod@3.23.8",
-        "conform": "npm:@conform-to/zod@1.1.5",
-        "@web/server": "./src/lib/mod.ts",
-        "~/": "./src/"
+
+        "openapi-backend": "npm:openapi-backend@5.10.6",
+        "openapi-fetch": "npm:openapi-fetch@0.10.6",
+
+        "~/": "./src/",
+        "openapi-backend-ext": "./src/lib/openapi-backend-ext/mod.ts",
+        "resty": "./src/lib/resty.ts"
     }
 }

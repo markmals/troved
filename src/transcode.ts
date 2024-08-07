@@ -1,5 +1,5 @@
 import { parseArgs } from '@std/cli/parse-args';
-import { Transcoder } from '~/api/transcoder.ts';
+import { Transcoder } from './services/transcoder.ts';
 
 const flags = parseArgs(Deno.args, {
     string: ['watch', 'output-movies', 'output-tv', 'quality', 'bitrate'],
