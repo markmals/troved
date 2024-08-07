@@ -26,7 +26,7 @@ const server = new OpenAPIBackend({
         },
         airDates: async (ctx) => {
             const traktClient = new Trakt(TRAKT_API_KEY);
-            const response = await traktClient.airDates({ showId: 'searchParams.id' });
+            const response = await traktClient.airDates({ showId: ctx.request.query.id });
             return json(response);
         },
         subscribe: async (ctx) => {
