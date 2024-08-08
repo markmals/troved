@@ -4,7 +4,7 @@ import type { paths } from './types.ts';
 class AuthMiddleware implements Middleware {
     #apiKey = Deno.env.get('TRAKT_CLIENT_ID')!;
 
-    async onRequest({ request }: MiddlewareCallbackParams): Promise<Request> {
+    onRequest({ request }: MiddlewareCallbackParams): Request {
         const headers = new Headers(request.headers);
         headers.append('trakt-api-key', this.#apiKey);
         const newRequest = new Request({ ...request, headers });

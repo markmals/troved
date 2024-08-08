@@ -1,6 +1,6 @@
 import { parseArgs } from '@std/cli/parse-args';
-import openapiTS, { astToString } from 'npm:openapi-typescript';
-import type { OpenAPI3 } from 'npm:openapi-typescript';
+import openapiTS, { astToString } from 'openapi-typescript';
+import type { OpenAPI3 } from 'openapi-typescript';
 import spec from './spec.ts';
 
 async function generateOpenApiDefinition() {

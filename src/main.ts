@@ -25,7 +25,7 @@ const server = new OpenAPIBackend({
             const response = await trakt.airDates({ showId: ctx.request.query.id });
             return json(response);
         },
-        subscribe: async (ctx) => {
+        subscribe: (ctx) => {
             return json(ctx.request.body);
         },
     }),

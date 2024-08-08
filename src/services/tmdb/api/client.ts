@@ -4,7 +4,7 @@ import type { paths } from './types.ts';
 class AuthMiddleware implements Middleware {
     #apiKey = Deno.env.get('TMDB_API_KEY')!;
 
-    async onRequest({ request }: MiddlewareCallbackParams): Promise<Request> {
+    onRequest({ request }: MiddlewareCallbackParams): Request {
         const url = new URL(request.url);
         url.searchParams.append('api_key', this.#apiKey);
         const newRequest = new Request({ ...request, url: url.toString() });

@@ -1,6 +1,6 @@
 import { API } from 'resty';
 import { EztvApiResponse } from './types.ts';
-import { Entries } from 'npm:type-fest';
+import { Entries } from 'type-fest';
 
 declare global {
     interface ObjectConstructor {
