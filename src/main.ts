@@ -8,7 +8,7 @@ import { operations as Operations } from './api/types.ts';
 import { tmdb, trakt } from '~/services/mod.ts';
 
 const server = new OpenAPIBackend({
-    definition,
+    definition: JSON.stringify(definition),
     handlers: defineHandlers<Operations>({
         search: async (ctx) => {
             const results = await tmdb.searchTV(ctx.request.query.q);
