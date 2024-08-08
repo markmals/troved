@@ -35,18 +35,21 @@
         "@std/fs": "jsr:@std/fs@^0.229.3",
         "@std/path": "jsr:@std/path@^0.225.2",
 
-        "downpour": "npm:downpour@^0.1.1",
-        "type-fest": "npm:type-fest@^4.23.0",
-        "apib2swagger": "npm:apib2swagger@^1.17.1",
-
         // OpenAPI
         "openapi-backend": "npm:openapi-backend@^5.10.6",
-        "openapi-fetch": "npm:openapi-fetch@^0.10.6",
-        "openapi-typescript": "npm:openapi-typescript@^7.3.0",
-
-        // Local import aliases
-        "~/": "./src/",
         "openapi-backend-ext": "./src/lib/openapi-backend-ext/mod.ts",
-        "resty": "./src/lib/resty.ts"
+        "openapi-fetch": "npm:openapi-fetch@^0.10.6",
+
+        // Other
+        "downpour": "npm:downpour@^0.1.1",
+        "resty": "./src/lib/resty.ts",
+
+        // Code generation
+        "openapi-typescript": "npm:openapi-typescript@^7.3.0",
+        "apib2swagger": "npm:apib2swagger@^1.17.1",
+        "type-fest": "npm:type-fest@^4.23.0",
+
+        // Local import alias
+        "~/": "./src/"
     }
 }

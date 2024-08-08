@@ -1,7 +1,7 @@
-import { parseArgs } from '@std/cli/parse-args';
+import * as cli from '@std/cli/parse-args';
 import { transcoder } from '~/services/mod.ts';
 
-const flags = parseArgs(Deno.args, {
+const flags = cli.parseArgs(Deno.args, {
     string: ['watch', 'output-movies', 'output-tv', 'quality', 'bitrate'],
     boolean: ['force-hevc'],
 });

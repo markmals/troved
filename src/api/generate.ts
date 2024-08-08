@@ -1,4 +1,4 @@
-import { parseArgs } from '@std/cli/parse-args';
+import * as cli from '@std/cli/parse-args';
 import openapiTS, { astToString } from 'openapi-typescript';
 import type { OpenAPI3 } from 'openapi-typescript';
 import spec from './spec.ts';
@@ -15,7 +15,7 @@ async function generateTypeDefinitions() {
     await Deno.writeTextFile('./src/api/types.ts', typeDefinitions);
 }
 
-const flags = parseArgs(Deno.args, {
+const flags = cli.parseArgs(Deno.args, {
     boolean: ['openapi-only', 'types-only'],
 });
 
