@@ -1,5 +1,5 @@
 import { parseArgs } from '@std/cli/parse-args';
-import { Transcoder } from './services/transcoder.ts';
+import { transcoder } from './services/transcoder/client.ts';
 
 const flags = parseArgs(Deno.args, {
     string: ['watch', 'output-movies', 'output-tv', 'quality', 'bitrate'],
@@ -10,7 +10,7 @@ if (!flags.watch) throw new Error('Must provide a folder to watch.');
 if (!flags['output-movies']) throw new Error('Must provide a folder to output converted movies.');
 if (!flags['output-tv']) throw new Error('Must provide a folder to output converted TV shows.');
 
-const handle = Transcoder.watch({
+const handle = transcoder.watch({
     input: flags.watch,
     output: { tv: flags['output-tv'], movies: flags['output-movies'] },
     forceHEVC: flags['force-hevc'],

@@ -2,22 +2,19 @@ import '@std/dotenv/load';
 
 import { OpenAPIBackend } from 'openapi-backend';
 import { createDenoAdapter, defineHandlers, json } from 'openapi-backend-ext';
-import { operations } from '~/api/api.d.ts';
-import { client as tmdbClient } from '~/services/tmdb/client.ts';
-import { Trakt } from '~/services/trakt/client.ts';
+import definition from './api/trove-v1.json' with { type: 'json' };
+import { operations as Operations } from './api/types.ts';
 
-const TRAKT_API_KEY = Deno.env.get('TRAKT_CLIENT_ID')!;
+import { tmdb, trakt } from '~/services/mod.ts';
 
 const server = new OpenAPIBackend({
-    definition: './src/api/openapi.json5',
-    handlers: defineHandlers<operations>({
+    definition,
+    handlers: defineHandlers<Operations>({
         search: async (ctx) => {
-            const { data } = await tmdbClient.GET('/3/search/tv', {
-                params: { query: { query: ctx.request.query.q } },
-            });
+            const results = await tmdb.searchTV(ctx.request.query.q);
 
             return json(
-                data?.results?.map(({ id, overview, name }) => ({
+                results?.results?.map(({ id, overview, name }) => ({
                     id,
                     overview,
                     name,
@@ -25,8 +22,7 @@ const server = new OpenAPIBackend({
             );
         },
         airDates: async (ctx) => {
-            const traktClient = new Trakt(TRAKT_API_KEY);
-            const response = await traktClient.airDates({ showId: ctx.request.query.id });
+            const response = await trakt.airDates({ showId: ctx.request.query.id });
             return json(response);
         },
         subscribe: async (ctx) => {

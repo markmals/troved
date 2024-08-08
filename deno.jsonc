@@ -2,7 +2,7 @@
     "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
     "fmt": {
         "indentWidth": 4,
-        "lineWidth": 120,
+        "lineWidth": 100,
         "singleQuote": true,
         "proseWrap": "always"
     },
@@ -19,8 +19,13 @@
         }
     },
     "tasks": {
-        "serve": "deno run -A --unstable-hmr src/main.ts",
-        "generate": "deno run --allow-read --allow-write --allow-env npm:openapi-typescript ./src/api/openapi.jsonc -o ./src/api/api.d.ts"
+        "serve": "deno run -A --unstable-hmr ./src/main.ts",
+        "generate": "deno task generate:server-api-types; deno task generate:tmdb; deno task generate:trakt",
+        "generate:server": "deno run --allow-read --allow-write --allow-env ./src/api/generate.ts",
+        "generate:server-openapi": "deno run --allow-read --allow-write --allow-env ./src/api/generate.ts --openapi-only",
+        "generate:server-api-types": "deno run --allow-read --allow-write --allow-env ./src/api/generate.ts --types-only",
+        "generate:tmdb": "deno run --allow-read --allow-write --allow-env --allow-net ./src/services/tmdb/api/generate.ts",
+        "generate:trakt": "deno run --allow-read --allow-write --allow-env --allow-net ./src/services/trakt/api/generate.ts"
     },
     "imports": {
         "@std/cli": "jsr:@std/cli@^0.224.7",

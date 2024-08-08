@@ -1,4 +1,31 @@
-import { ContentType, HttpMethod, Range, StatusError } from './types.ts';
+export const HttpMethod = {
+    Get: 'GET',
+    Post: 'POST',
+    Put: 'PUT',
+    Patch: 'PATCH',
+    Delete: 'DELETE',
+};
+
+export const ContentType = {
+    /** The JSON content type. */
+    Json: 'application/json',
+    /** The XML content type. */
+    Xml: 'application/xml',
+    /** The Form Encoded content type. */
+    UrlEncoded: 'application/x-www-form-urlencoded',
+};
+
+export type Range = [lowerBound: number, upperBound: number];
+
+export class StatusError extends Error {
+    public constructor(public response: Response) {
+        super();
+    }
+
+    public get cause() {
+        return this.response.statusText;
+    }
+}
 
 export class RequestBuilder {
     private readonly requestInit: RequestInit & { headers: Headers } = {
@@ -70,7 +97,7 @@ export class RequestBuilder {
 
     /** Adds the search parameters to the request. */
     public searchParams(
-        query: URLSearchParams | Record<string, string | undefined>,
+        query: URLSearchParams | Partial<Record<string, string | undefined>>,
     ): RequestBuilder {
         for (
             const [key, value] of query instanceof URLSearchParams ? query : Object.entries(query)
@@ -121,23 +148,23 @@ export abstract class API {
         return new RequestBuilder(method, this.buildUrl(path));
     }
 
-    protected get(path: string) {
+    protected GET(path: string) {
         return this.buildRequestBuilder(HttpMethod.Get, path);
     }
 
-    protected post(path: string) {
+    protected POST(path: string) {
         return this.buildRequestBuilder(HttpMethod.Post, path);
     }
 
-    protected put(path: string) {
+    protected PUT(path: string) {
         return this.buildRequestBuilder(HttpMethod.Put, path);
     }
 
-    protected patch(path: string) {
+    protected PATCH(path: string) {
         return this.buildRequestBuilder(HttpMethod.Patch, path);
     }
 
-    protected delete(path: string) {
+    protected DELETE(path: string) {
         return this.buildRequestBuilder(HttpMethod.Delete, path);
     }
 }

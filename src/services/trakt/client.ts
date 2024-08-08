@@ -1,21 +1,7 @@
-import { API } from 'resty';
-import { MovieSearchResult, SearchResult, ShowSearchResult } from './models/search-result.ts';
+import { client } from './api/client.ts';
+import { MovieSearchResult, SearchResult, ShowSearchResult, TraktAirDate } from '~/services/trakt/types.ts';
 
-export interface TraktAirDate {
-    airs: {
-        day: string;
-        time: string;
-        timezone: string;
-    };
-}
-
-export class Trakt extends API {
-    protected readonly baseUrl = 'https://api.trakt.tv';
-
-    public constructor(private apiKey: string) {
-        super();
-    }
-
+class Trakt {
     public async search(options: { query: string; type: 'movie' }): Promise<MovieSearchResult[]>;
     public async search(options: { query: string; type: 'show' }): Promise<ShowSearchResult[]>;
     public async search(options: { id: string; type: 'movie' }): Promise<MovieSearchResult[]>;
@@ -26,28 +12,27 @@ export class Trakt extends API {
             id: string;
             type: 'movie' | 'show';
         },
-    ) {
-        const searchEndpoint = options.id ? `tmdb/${options.id}` : '';
-        return await this.get(`search/${searchEndpoint}`)
-            .searchParams({ query: options.query, type: options.type })
-            .fetchJson<Result[]>();
+    ): Promise<Result> {
+        const { data } = options.id
+            ? await client.GET('/search/{id_type}/{id}', {
+                params: { path: { id_type: 'tmdb', id: options.id } },
+            })
+            : await client.GET('/search/{type}', {
+                params: { path: { type: options.type }, query: { query: options.query! } },
+            });
+
+        return data as any;
     }
 
-    public async airDates({ showId }: { showId: string }) {
-        return await this.get(`shows/${showId}`)
-            .searchParams({ extended: 'full' })
-            .fetchJson<TraktAirDate>()
-            .then(({ airs }) => airs);
-    }
+    public async airDates({ showId }: { showId: string }): Promise<TraktAirDate['airs']> {
+        // FIXME: figure out how to generate these definitions better so I can remove the `any`s
+        const { data } = await client.GET('/shows/{id}', {
+            params: { path: { id: showId }, query: { extended: 'full' } as any },
+        });
 
-    protected override get(path: string) {
-        // Add auth to all requests
-        return super.get(path).headers({ 'trakt-api-key': this.apiKey });
+        return (data as any).airs;
     }
 }
 
-// import '@std/dotenv/load';
-// const apiKey = Deno.env.get('TRAKT_CLIENT_ID')!
-// console.log(apiKey)
-// const client = new Trakt(apiKey);
-// console.log((await client.search({ query: 'Breaking Bad', type: 'show' }))[0]);
+export const trakt = new Trakt();
+export type { Trakt };

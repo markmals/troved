@@ -38,3 +38,8 @@ yarn-error.log*
 .vercel
 
 deno.lock
+
+# generated OpenAPI files
+/src/api/types.ts
+/src/services/tmdb/api/types.ts
+/src/services/trakt/api/types.ts

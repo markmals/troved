@@ -1,16 +1,14 @@
-import createClient, { Middleware, MiddlewareCallbackParams } from 'openapi-fetch';
-import type { paths } from './types.d.ts';
+import { client } from '~/services/tmdb/api/client.ts';
 
-class AuthMiddleware implements Middleware {
-    #apiKey = Deno.env.get('TMDB_API_KEY')!;
+class TheMovieDB {
+    public async searchTV(query: string) {
+        const { data } = await client.GET('/3/search/tv', {
+            params: { query: { query } },
+        });
 
-    async onRequest({ request }: MiddlewareCallbackParams): Promise<Request> {
-        const url = new URL(request.url);
-        url.searchParams.append('api_key', this.#apiKey);
-        const newRequest = new Request({ ...request, url: url.toString() });
-        return newRequest;
+        return data;
     }
 }
 
-export const client = createClient<paths>({ baseUrl: 'https://api.themoviedb.org' });
-client.use(new AuthMiddleware());
+export const tmdb = new TheMovieDB();
+export type { TheMovieDB };
