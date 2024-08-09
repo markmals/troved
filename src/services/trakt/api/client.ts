@@ -7,10 +7,10 @@ class AuthMiddleware implements Middleware {
     onRequest({ request }: MiddlewareCallbackParams): Request {
         const headers = new Headers(request.headers);
         headers.append('trakt-api-key', this.#apiKey);
-        const newRequest = new Request({ ...request, headers });
+        const newRequest = new Request(request.url, { ...request, headers });
         return newRequest;
     }
 }
 
-export const client = createClient<paths>({ baseUrl: 'https://api.trakt.tv' });
+export const client = createClient<paths>({ baseUrl: 'https://api.trakt.tv/' });
 client.use(new AuthMiddleware());

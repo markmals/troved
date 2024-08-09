@@ -7,10 +7,10 @@ class AuthMiddleware implements Middleware {
     onRequest({ request }: MiddlewareCallbackParams): Request {
         const url = new URL(request.url);
         url.searchParams.append('api_key', this.#apiKey);
-        const newRequest = new Request({ ...request, url: url.toString() });
+        const newRequest = new Request(url, { ...request });
         return newRequest;
     }
 }
 
-export const client = createClient<paths>({ baseUrl: 'https://api.themoviedb.org' });
+export const client = createClient<paths>({ baseUrl: 'https://api.themoviedb.org/' });
 client.use(new AuthMiddleware());
