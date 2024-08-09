@@ -17,12 +17,7 @@
         "serve": "deno run -A --unstable-hmr ./src/main.ts",
 
         // API generator
-        "generate": "deno task generate:server-api-types; deno task generate:tmdb; deno task generate:trakt",
-
-        // Server API generators
-        "generate:server": "deno run --allow-read --allow-write --allow-env ./src/api/generate.ts",
-        "generate:server-openapi": "deno run --allow-read --allow-write --allow-env ./src/api/generate.ts --openapi-only",
-        "generate:server-api-types": "deno run --allow-read --allow-write --allow-env ./src/api/generate.ts --types-only",
+        "generate": "deno task generate:tmdb; deno task generate:trakt",
 
         // Client API generators
         "generate:tmdb": "deno run --allow-read --allow-write --allow-env --allow-net ./src/services/tmdb/api/generate.ts",
