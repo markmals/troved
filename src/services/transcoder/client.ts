@@ -1,12 +1,7 @@
 import Downpour from 'downpour';
 import * as path from '@std/path';
 import * as fs from '@std/fs';
-import {
-    FFmpegOptions,
-    TranscodeFileOptions,
-    VideoInfo,
-    WatchOptions,
-} from '~/services/transcoder/types.ts';
+import { FFmpegOptions, TranscodeFileOptions, VideoInfo, WatchOptions } from './types.ts';
 
 class Transcoder {
     protected async ffprobe({ input }: { input: string }): Promise<VideoInfo> {

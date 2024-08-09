@@ -1,5 +1,5 @@
 import { client } from './api/client.ts';
-import { MovieSearchResult, SearchResult, ShowSearchResult, TraktAirDate } from '~/services/trakt/types.ts';
+import { MovieSearchResult, SearchResult, ShowSearchResult, TraktAirDate } from './types.ts';
 
 class Trakt {
     public async search(options: { query: string; type: 'movie' }): Promise<MovieSearchResult[]>;

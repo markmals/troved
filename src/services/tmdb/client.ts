@@ -1,4 +1,4 @@
-import { client } from '~/services/tmdb/api/client.ts';
+import { client } from './api/client.ts';
 
 class TheMovieDB {
     public async searchTV(query: string) {
