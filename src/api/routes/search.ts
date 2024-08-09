@@ -1,4 +1,4 @@
-import { createRoute, z } from 'npm:@hono/zod-openapi';
+import { createRoute, z } from '@hono/zod-openapi';
 import { SearchResults } from '../schemas.ts';
 
 export default createRoute({

@@ -1,4 +1,4 @@
-import { OpenAPIHono } from 'npm:@hono/zod-openapi';
+import { OpenAPIHono } from '@hono/zod-openapi';
 import airDates from './routes/air-dates.ts';
 import search from './routes/search.ts';
 import subscribe from './routes/subscribe.ts';

@@ -1,4 +1,4 @@
-import { z } from 'npm:@hono/zod-openapi';
+import { z } from '@hono/zod-openapi';
 
 export const SearchResult = z
     .object({

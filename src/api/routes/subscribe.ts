@@ -1,4 +1,4 @@
-import { createRoute } from 'npm:@hono/zod-openapi';
+import { createRoute } from '@hono/zod-openapi';
 import { Subscription } from '../schemas.ts';
 
 export default createRoute({
