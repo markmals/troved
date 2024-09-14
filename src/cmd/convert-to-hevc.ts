@@ -119,26 +119,32 @@ async function convertToHEVC(input: string) {
         let duration: number | null = null;
         let progress = 0;
 
-        for await (const chunk of process.stderr) {
-            const output = decoder.decode(chunk);
-            if (!duration) {
-                const match = output.match(/Duration: (\d{2}):(\d{2}):(\d{2})/);
-                if (match) {
-                    duration = parseInt(match[1]) * 3600 + parseInt(match[2]) * 60 +
-                        parseInt(match[3]);
+        try {
+            for await (const chunk of process.stderr) {
+                const output = decoder.decode(chunk);
+                if (!duration) {
+                    const match = output.match(/Duration: (\d{2}):(\d{2}):(\d{2})/);
+                    if (match) {
+                        duration = parseInt(match[1]) * 3600 + parseInt(match[2]) * 60 +
+                            parseInt(match[3]);
+                    }
+                }
+                const timeMatch = output.match(/time=(\d{2}):(\d{2}):(\d{2})/);
+                if (timeMatch && duration) {
+                    const currentTime = parseInt(timeMatch[1]) * 3600 +
+                        parseInt(timeMatch[2]) * 60 +
+                        parseInt(timeMatch[3]);
+                    progress = currentTime / duration;
+                    if (overallProgress) {
+                        overallProgress.render(progress, {
+                            text: `Converting ${basename(filePath)}`,
+                        });
+                    }
                 }
             }
-            const timeMatch = output.match(/time=(\d{2}):(\d{2}):(\d{2})/);
-            if (timeMatch && duration) {
-                const currentTime = parseInt(timeMatch[1]) * 3600 + parseInt(timeMatch[2]) * 60 +
-                    parseInt(timeMatch[3]);
-                progress = currentTime / duration;
-                if (overallProgress) {
-                    overallProgress.render(progress, {
-                        text: `Converting ${basename(filePath)}`,
-                    });
-                }
-            }
+        } catch (error) {
+            console.error(`Error reading stderr: ${error.message}`);
+            // Continue with the conversion, but we won't be able to show progress
         }
 
         const { code, stderr } = await process.output();
