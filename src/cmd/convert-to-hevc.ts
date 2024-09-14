@@ -156,7 +156,9 @@ async function convertToHEVC(input: string) {
         const { code, stderr } = await process.output();
 
         if (code !== 0) {
-            console.error(`Error converting ${filePath}: ${new TextDecoder().decode(stderr)}`);
+            console.error(
+                `Error converting ${filePath}: \n${new TextDecoder().decode(stderr).trim()}`,
+            );
             await Deno.remove(tempDir, { recursive: true });
             Deno.exit(1);
         }
