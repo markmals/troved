@@ -65,6 +65,8 @@ async function convertToHEVC(input: string) {
                     'language=eng',
                     '-metadata:s:s:0',
                     'language=eng',
+                    '-v',
+                    'error',
                     tempOutputPath,
                 ],
             });
@@ -139,6 +141,8 @@ async function convertToHEVC(input: string) {
             'hvc1',
             '-movflags',
             '+faststart',
+            '-v',
+            'error',
             tempOutputPath,
         ];
 
@@ -166,7 +170,7 @@ async function convertToHEVC(input: string) {
                     `${basename(finalOutputPath, '.mp4')}_${i}.${subExt}`,
                 );
                 const extractCommand = new Deno.Command('ffmpeg', {
-                    args: ['-i', filePath, '-map', `0:s:${i}`, subtitleOutputPath],
+                    args: ['-i', filePath, '-map', `0:s:${i}`, '-v', 'error', subtitleOutputPath],
                 });
                 const { code, stderr } = await extractCommand.output();
                 if (code !== 0) {
