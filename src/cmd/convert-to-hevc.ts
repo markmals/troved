@@ -2,6 +2,7 @@ import { Command } from 'cliffy';
 import { walk } from '@std/fs';
 import { basename, dirname, extname, join } from '@std/path';
 import ProgressBar from 'jsr:@deno-library/progress';
+import { ffmpeg, ffprobe } from './fast-forward.ts';
 
 async function convertToHEVC(input: string) {
     const isDirectory = (await Deno.stat(input)).isDirectory;
@@ -15,28 +16,16 @@ async function convertToHEVC(input: string) {
         );
 
         // Use ffprobe to get video, audio and subtitle information
-        const ffprobeCommand = new Deno.Command('ffprobe', {
-            args: [
-                '-v',
-                'quiet',
-                '-print_format',
-                'json',
-                '-show_streams',
-                '-show_format',
-                filePath,
-            ],
+        const fileInfo = await ffprobe({
+            filePath,
+            verbosity: 'quiet',
+            printFormat: 'json',
+            showStreams: true,
+            showFormat: true,
         });
-        const ffprobeOutput = await ffprobeCommand.output();
-        if (ffprobeOutput.code !== 0) {
-            console.error(
-                `Error running ffprobe: ${new TextDecoder().decode(ffprobeOutput.stderr)}`,
-            );
-            Deno.exit(1);
-        }
-        const fileInfo = JSON.parse(new TextDecoder().decode(ffprobeOutput.stdout));
 
         // Check if the video is already HEVC
-        const videoStream = fileInfo.streams.find((stream: any) => stream.codec_type === 'video');
+        const videoStream = fileInfo.streams.find((stream) => stream.codec_type === 'video');
         const isHEVC = videoStream?.codec_name === 'hevc';
         const hasHVC1Tag = videoStream?.tags?.['tag:hvc1'] === '1';
 
@@ -47,28 +36,16 @@ async function convertToHEVC(input: string) {
 
         if (isHEVC && !hasHVC1Tag) {
             // Apply hvc1 tag only
-            const tagCommand = new Deno.Command('ffmpeg', {
-                args: [
-                    '-i',
-                    filePath,
-                    '-metadata:s:a:0',
-                    'language=eng',
-                    '-metadata:s:a:0',
-                    'title=ENG',
-                    '-c',
-                    'copy',
-                    '-c:s',
-                    'mov_text',
-                    '-map',
-                    '0',
-                    '-tag:v',
-                    'hvc1',
-                    '-v',
-                    'error',
-                    tempOutputPath,
-                ],
+            const tagProcess = ffmpeg({
+                input: filePath,
+                output: tempOutputPath,
+                audioCodec: 'copy',
+                subtitleCodec: 'mov_text',
+                map: '0',
+                tag: { v: 'hvc1' },
+                metadata: { 's:a:0': { language: 'eng', title: 'ENG' } },
+                verbosity: 'error',
             });
-            const tagProcess = tagCommand.spawn();
             const { code, stderr } = await tagProcess.output();
 
             if (code === 0) {
@@ -88,24 +65,27 @@ async function convertToHEVC(input: string) {
 
         // If not HEVC, proceed with full conversion
         // Determine audio codec and channel layout
-        const audioStream = fileInfo.streams.find((stream: any) => stream.codec_type === 'audio');
+        const audioStream = fileInfo.streams.find((stream) => stream.codec_type === 'audio');
         const currentAudioCodec = audioStream?.codec_name;
         const channelLayout = audioStream?.channel_layout;
 
-        let audioCodec = '-c:a copy';
+        let audioCodec = 'copy';
+        let audioBitrate;
         if (currentAudioCodec !== 'aac' && currentAudioCodec !== 'eac3') {
             if (channelLayout === 'stereo' || channelLayout === 'mono') {
-                audioCodec = '-c:a aac -b:a 192k';
+                audioCodec = 'aac';
+                audioBitrate = '192k';
             } else {
-                audioCodec = '-c:a eac3 -b:a 640k';
+                audioCodec = 'eac3';
+                audioBitrate = '640k';
             }
         }
 
         // Determine subtitle handling
-        const subtitleStreams = fileInfo.streams.filter((stream: any) =>
+        const subtitleStreams = fileInfo.streams.filter((stream) =>
             stream.codec_type === 'subtitle'
         );
-        let subtitleHandling = '-c:s mov_text';
+        let subtitleCodec: string | undefined = 'mov_text';
         let extractSubtitles = false;
 
         const bitmapSubtitleFormats = ['dvdsub', 'dvbsub', 'pgssub', 'xsub'];
@@ -117,37 +97,22 @@ async function convertToHEVC(input: string) {
         }
 
         if (extractSubtitles) {
-            subtitleHandling = '-sn';
+            subtitleCodec = undefined;
         }
 
-        const ffmpegCommand = [
-            '-i',
-            filePath,
-            '-metadata:s:a:0',
-            'language=eng',
-            '-metadata:s:a:0',
-            'title=ENG',
-            '-c:v',
-            'libx265',
-            '-preset',
-            'medium',
-            '-crf',
-            '23',
-            ...audioCodec.split(' '),
-            ...subtitleHandling.split(' '),
-            '-tag:v',
-            'hvc1',
-            '-v',
-            'error',
-            tempOutputPath,
-        ];
-
-        const command = new Deno.Command('ffmpeg', {
-            args: ffmpegCommand,
-            stdout: 'piped',
-            stderr: 'piped',
+        const process = ffmpeg({
+            input: filePath,
+            output: tempOutputPath,
+            videoCodec: 'libx265',
+            audioCodec,
+            preset: 'medium',
+            crf: 23,
+            audioBitrate,
+            subtitleCodec,
+            tag: { v: 'hvc1' },
+            metadata: { 's:a:0': { language: 'eng', title: 'ENG' } },
+            verbosity: 'error',
         });
-        const process = command.spawn();
 
         const decoder = new TextDecoder();
         let duration: number | null = null;
@@ -193,18 +158,13 @@ async function convertToHEVC(input: string) {
                     dirname(finalOutputPath),
                     `${basename(finalOutputPath, '.mp4')}_${i}.${subExt}`,
                 );
-                const extractCommand = new Deno.Command('ffmpeg', {
-                    args: [
-                        '-i',
-                        filePath,
-                        '-map',
-                        `0:s:${i}`,
-                        '-v',
-                        'error',
-                        subtitleOutputPath,
-                    ],
+                const extractProcess = ffmpeg({
+                    input: filePath,
+                    output: subtitleOutputPath,
+                    map: `0:s:${i}`,
+                    verbosity: 'error',
                 });
-                const { code, stderr } = await extractCommand.output();
+                const { code, stderr } = await extractProcess.output();
                 if (code !== 0) {
                     console.error(`Error extracting subtitle: ${decoder.decode(stderr)}`);
                     await Deno.remove(tempDir, { recursive: true });
