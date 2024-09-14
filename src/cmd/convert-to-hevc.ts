@@ -27,6 +27,7 @@ async function convertToHEVC(input: string) {
         // Check if the video is already HEVC
         const videoStream = fileInfo.streams.find((stream) => stream.codec_type === 'video');
         const isHEVC = videoStream?.codec_name === 'hevc';
+        console.log(videoStream?.tags);
         const hasHVC1Tag = videoStream?.tags?.['tag:hvc1'] === '1';
 
         if (isHEVC && hasHVC1Tag) {
@@ -39,6 +40,7 @@ async function convertToHEVC(input: string) {
             const tagProcess = ffmpeg({
                 input: filePath,
                 output: tempOutputPath,
+                videoCodec: 'copy',
                 audioCodec: 'copy',
                 subtitleCodec: 'mov_text',
                 map: '0',
@@ -227,7 +229,7 @@ async function moveFile(source: string, destination: string) {
     try {
         await Deno.rename(source, destination);
     } catch (error) {
-        if (error instanceof Deno.errors.CrossDevice) {
+        if (error instanceof Error && error.message.includes('os error 18')) {
             // If rename fails due to cross-device error, use copy and remove
             await Deno.copyFile(source, destination);
             await Deno.remove(source);
