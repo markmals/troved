@@ -121,7 +121,7 @@ async function convertToHEVC(input: string) {
             '-c:v libx265',
             '-preset medium',
             '-crf 23',
-            ...audioCodec.split(' '),
+            audioCodec,
             subtitleHandling,
             '-tag:v hvc1',
             '-v error',
