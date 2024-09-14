@@ -7,7 +7,12 @@ async function convertToHEVC(input: string) {
     const isDirectory = (await Deno.stat(input)).isDirectory;
 
     async function processFile(filePath: string) {
-        const outputPath = filePath.replace(extname(filePath), '.mp4');
+        const tempDir = await Deno.makeTempDir();
+        const tempOutputPath = join(tempDir, `${basename(filePath, extname(filePath))}.mp4`);
+        const finalOutputPath = join(
+            dirname(filePath),
+            `${basename(filePath, extname(filePath))}.mp4`,
+        );
 
         // Use ffprobe to get video, audio and subtitle information
         const ffprobeCommand = new Deno.Command('ffprobe', {
@@ -54,7 +59,7 @@ async function convertToHEVC(input: string) {
                     'language=eng',
                     '-metadata:s:s:0',
                     'language=eng',
-                    outputPath,
+                    tempOutputPath,
                 ],
             });
             const tagProcess = tagCommand.spawn();
@@ -62,6 +67,7 @@ async function convertToHEVC(input: string) {
 
             if (code === 0) {
                 await Deno.remove(filePath);
+                await Deno.rename(tempOutputPath, finalOutputPath);
                 console.log(`Applied hvc1 tag to ${filePath}`);
             } else {
                 const { stderr } = await tagProcess.output();
@@ -69,6 +75,7 @@ async function convertToHEVC(input: string) {
                     `Error applying hvc1 tag to ${filePath}: ${new TextDecoder().decode(stderr)}`,
                 );
             }
+            await Deno.remove(tempDir, { recursive: true });
             return;
         }
 
@@ -125,7 +132,7 @@ async function convertToHEVC(input: string) {
             'hvc1',
             '-movflags',
             '+faststart',
-            outputPath,
+            tempOutputPath,
         ];
 
         const command = new Deno.Command('ffmpeg', { args: ffmpegCommand });
@@ -139,8 +146,8 @@ async function convertToHEVC(input: string) {
                     const subStream = subtitleStreams[i];
                     const subExt = subStream.codec_name === 'subrip' ? 'srt' : subStream.codec_name;
                     const subtitleOutputPath = join(
-                        dirname(outputPath),
-                        `${basename(outputPath, '.mp4')}_${i}.${subExt}`,
+                        dirname(finalOutputPath),
+                        `${basename(finalOutputPath, '.mp4')}_${i}.${subExt}`,
                     );
                     const extractCommand = new Deno.Command('ffmpeg', {
                         args: ['-i', filePath, '-map', `0:s:${i}`, subtitleOutputPath],
@@ -149,11 +156,13 @@ async function convertToHEVC(input: string) {
                 }
             }
             await Deno.remove(filePath);
+            await Deno.rename(tempOutputPath, finalOutputPath);
             console.log(`Successfully converted ${filePath} to HEVC`);
         } else {
             const { stderr } = await process.output();
             console.error(`Error converting ${filePath}: ${new TextDecoder().decode(stderr)}`);
         }
+        await Deno.remove(tempDir, { recursive: true });
     }
 
     if (isDirectory) {
