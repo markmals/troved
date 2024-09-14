@@ -145,10 +145,14 @@ async function convertToHEVC(input: string) {
                     });
                 }
             }
-        } catch (error) {
-            console.error(`Error reading stderr: ${error.message}`);
-            // Continue with the conversion, but we won't be able to show progress
+        } finally {
+            // Swallow errors
         }
+
+        // catch (error) {
+        //     // console.error(`Error reading stderr: ${error.message}`);
+        //     // Continue with the conversion, but we won't be able to show progress
+        // }
 
         const { code, stderr } = await process.output();
 
