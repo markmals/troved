@@ -115,7 +115,6 @@ async function convertToHEVC(input: string) {
             verbosity: 'error',
         });
 
-        const decoder = new TextDecoder();
         let duration: number | null = null;
         let progress = 0;
 
@@ -124,32 +123,44 @@ async function convertToHEVC(input: string) {
             width: 50,
         });
 
+        const reader = process.stderr.getReader();
+        const decoder = new TextDecoder();
         try {
-            for await (const chunk of process.stderr) {
-                const output = decoder.decode(chunk);
-                if (!duration) {
-                    const match = output.match(/Duration: (\d{2}):(\d{2}):(\d{2})/);
-                    if (match) {
-                        duration = parseInt(match[1]) * 3600 + parseInt(match[2]) * 60 +
-                            parseInt(match[3]);
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    if (!duration) {
+                        const match = line.match(/Duration: (\d{2}):(\d{2}):(\d{2})/);
+                        if (match) {
+                            duration = parseInt(match[1]) * 3600 + parseInt(match[2]) * 60 +
+                                parseInt(match[3]);
+                        }
                     }
-                }
-                const timeMatch = output.match(/time=(\d{2}):(\d{2}):(\d{2})/);
-                if (timeMatch && duration) {
-                    const currentTime = parseInt(timeMatch[1]) * 3600 +
-                        parseInt(timeMatch[2]) * 60 +
-                        parseInt(timeMatch[3]);
-                    progress = currentTime / duration;
-                    ffmpegProgressBar.render(progress * 100, {
-                        text: `Converting ${basename(filePath)}`,
-                    });
+                    const timeMatch = line.match(/time=(\d{2}):(\d{2}):(\d{2})/);
+                    if (timeMatch && duration) {
+                        const currentTime = parseInt(timeMatch[1]) * 3600 +
+                            parseInt(timeMatch[2]) * 60 +
+                            parseInt(timeMatch[3]);
+                        progress = currentTime / duration;
+                        ffmpegProgressBar.render(progress * 100, {
+                            text: `Converting ${basename(filePath)}`,
+                        });
+                    }
                 }
             }
         } catch (error) {
-            console.dir(error);
-            // Swallow errors
-            // console.error(`Error reading stderr: ${error.message}`);
+            console.error(`Error reading stderr: ${error.message}`);
             // Continue with the conversion, but we won't be able to show progress
+        } finally {
+            reader.releaseLock();
         }
 
         const { code, stderr } = await process.output();
@@ -208,7 +219,7 @@ async function convertToHEVC(input: string) {
 
         for (let index = 0; index < files.length; index++) {
             const file = files[index];
-            await processFile(file, overallProgressBar);
+            await processFile(file);
             overallProgressBar.render(index + 1, {
                 text: `Completed ${index + 1}/${files.length} files`,
             });
