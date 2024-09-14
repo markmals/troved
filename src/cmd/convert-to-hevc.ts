@@ -135,10 +135,14 @@ async function convertToHEVC(input: string) {
             tempOutputPath,
         ];
 
-        const command = new Deno.Command('ffmpeg', { args: ffmpegCommand });
+        const command = new Deno.Command('ffmpeg', {
+            args: ffmpegCommand,
+            stdout: 'piped',
+            stderr: 'piped',
+        });
         const process = command.spawn();
 
-        const { code } = await process.status;
+        const { code, stderr } = await process.output();
 
         if (code === 0) {
             if (extractSubtitles) {
@@ -159,7 +163,6 @@ async function convertToHEVC(input: string) {
             await Deno.rename(tempOutputPath, finalOutputPath);
             console.log(`Successfully converted ${filePath} to HEVC`);
         } else {
-            const { stderr } = await process.output();
             console.error(`Error converting ${filePath}: ${new TextDecoder().decode(stderr)}`);
         }
         await Deno.remove(tempDir, { recursive: true });
