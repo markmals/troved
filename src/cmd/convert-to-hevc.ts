@@ -27,8 +27,7 @@ async function convertToHEVC(input: string) {
         // Check if the video is already HEVC
         const videoStream = fileInfo.streams.find((stream) => stream.codec_type === 'video');
         const isHEVC = videoStream?.codec_name === 'hevc';
-        console.log(videoStream?.tags);
-        const hasHVC1Tag = videoStream?.tags?.['tag:hvc1'] === '1';
+        const hasHVC1Tag = videoStream?.codec_tag_string === 'hvc1';
 
         if (isHEVC && hasHVC1Tag) {
             console.log(`${filePath} is already HEVC with hvc1 tag. Skipping.`);
