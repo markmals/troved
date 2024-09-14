@@ -146,13 +146,13 @@ async function convertToHEVC(input: string) {
         //     }
         // }
 
-        // const { code } = await process.output();
+        const { code } = await process.output();
 
-        // if (code !== 0) {
-        //     console.error(`Error converting ${filePath}`);
-        //     await Deno.remove(tempDir, { recursive: true });
-        //     Deno.exit(1);
-        // }
+        if (code !== 0) {
+            console.error(`Error converting ${filePath}`);
+            await Deno.remove(tempDir, { recursive: true });
+            Deno.exit(1);
+        }
 
         if (extractSubtitles) {
             for (let i = 0; i < subtitleStreams.length; i++) {
@@ -193,7 +193,7 @@ async function convertToHEVC(input: string) {
         // Sort the files alphabetically
         files.sort((a, b) => a.localeCompare(b));
 
-        const overallProgressBar = new ProgressBar({
+        const progress = new ProgressBar({
             total: files.length,
             width: 50,
         });
@@ -201,9 +201,7 @@ async function convertToHEVC(input: string) {
         for (let index = 0; index < files.length; index++) {
             const file = files[index];
             await processFile(file);
-            overallProgressBar.render(index + 1, {
-                text: `Completed ${index + 1}/${files.length} files`,
-            });
+            progress.render(index + 1);
         }
     } else {
         await processFile(input);
