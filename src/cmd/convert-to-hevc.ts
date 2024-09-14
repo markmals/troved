@@ -50,7 +50,7 @@ async function convertToHEVC(input: string) {
 
             if (code === 0) {
                 await Deno.remove(filePath);
-                await Deno.rename(tempOutputPath, finalOutputPath);
+                await moveFile(tempOutputPath, finalOutputPath);
                 console.log(`Applied hvc1 tag to ${filePath}`);
             } else {
                 console.error(
@@ -173,7 +173,7 @@ async function convertToHEVC(input: string) {
             }
         }
         await Deno.remove(filePath);
-        await Deno.rename(tempOutputPath, finalOutputPath);
+        await moveFile(tempOutputPath, finalOutputPath);
         console.log(`Successfully converted ${filePath} to HEVC`);
         await Deno.remove(tempDir, { recursive: true });
     }
@@ -221,4 +221,18 @@ try {
 } catch (error) {
     console.error(`${error}`);
     Deno.exit(1);
+}
+
+async function moveFile(source: string, destination: string) {
+    try {
+        await Deno.rename(source, destination);
+    } catch (error) {
+        if (error instanceof Deno.errors.CrossDevice) {
+            // If rename fails due to cross-device error, use copy and remove
+            await Deno.copyFile(source, destination);
+            await Deno.remove(source);
+        } else {
+            throw error;
+        }
+    }
 }
