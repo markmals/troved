@@ -115,41 +115,10 @@ async function convertToHEVC(input: string) {
             verbosity: 'error',
         });
 
-        const decoder = new TextDecoder();
-        let duration: number | null = null;
-        let progress = 0;
-
-        const ffmpegProgressBar = new ProgressBar({
-            total: 100,
-            width: 50,
-        });
-
-        console.dir(process);
-        // for await (const chunk of process.stderr) {
-        //     const output = decoder.decode(chunk);
-        //     if (!duration) {
-        //         const match = output.match(/Duration: (\d{2}):(\d{2}):(\d{2})/);
-        //         if (match) {
-        //             duration = parseInt(match[1]) * 3600 + parseInt(match[2]) * 60 +
-        //                 parseInt(match[3]);
-        //         }
-        //     }
-        //     const timeMatch = output.match(/time=(\d{2}):(\d{2}):(\d{2})/);
-        //     if (timeMatch && duration) {
-        //         const currentTime = parseInt(timeMatch[1]) * 3600 +
-        //             parseInt(timeMatch[2]) * 60 +
-        //             parseInt(timeMatch[3]);
-        //         progress = currentTime / duration;
-        //         ffmpegProgressBar.render(progress * 100, {
-        //             text: `Converting ${basename(filePath)}`,
-        //         });
-        //     }
-        // }
-
-        const { code } = await process.output();
+        const { code, stderr } = await process.output();
 
         if (code !== 0) {
-            console.error(`Error converting ${filePath}`);
+            console.error(`Error converting ${filePath}: ${new TextDecoder().decode(stderr)}`);
             await Deno.remove(tempDir, { recursive: true });
             Deno.exit(1);
         }
