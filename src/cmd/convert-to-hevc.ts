@@ -145,13 +145,13 @@ async function convertToHEVC(input: string) {
             }
         }
 
-        const { code } = await process.output();
+        // const { code } = await process.output();
 
-        if (code !== 0) {
-            console.error(`Error converting ${filePath}`);
-            await Deno.remove(tempDir, { recursive: true });
-            Deno.exit(1);
-        }
+        // if (code !== 0) {
+        //     console.error(`Error converting ${filePath}`);
+        //     await Deno.remove(tempDir, { recursive: true });
+        //     Deno.exit(1);
+        // }
 
         if (extractSubtitles) {
             for (let i = 0; i < subtitleStreams.length; i++) {
