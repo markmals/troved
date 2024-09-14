@@ -124,6 +124,7 @@ async function convertToHEVC(input: string) {
             width: 50,
         });
 
+        console.dir(process.stderr);
         for await (const chunk of process.stderr) {
             const output = decoder.decode(chunk);
             if (!duration) {
@@ -199,7 +200,7 @@ async function convertToHEVC(input: string) {
 
         for (let index = 0; index < files.length; index++) {
             const file = files[index];
-            await processFile(file, overallProgressBar);
+            await processFile(file);
             overallProgressBar.render(index + 1, {
                 text: `Completed ${index + 1}/${files.length} files`,
             });
