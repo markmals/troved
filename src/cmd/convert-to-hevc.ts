@@ -138,7 +138,7 @@ async function convertToHEVC(input: string) {
             ...audioCodec.split(' '),
             subtitleHandling,
             '-movflags',
-            '+faststart',
+            'faststart',
             '-v',
             'error',
             '-tag:v',
