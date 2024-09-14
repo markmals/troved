@@ -6,7 +6,7 @@ import ProgressBar from 'jsr:@deno-library/progress';
 async function convertToHEVC(input: string) {
     const isDirectory = (await Deno.stat(input)).isDirectory;
 
-    async function processFile(filePath: string) {
+    async function processFile(filePath: string, overallProgress?: ProgressBar) {
         const tempDir = await Deno.makeTempDir();
         const tempOutputPath = join(tempDir, `${basename(filePath, extname(filePath))}.mp4`);
         const finalOutputPath = join(
@@ -149,11 +149,37 @@ async function convertToHEVC(input: string) {
         });
         const process = command.spawn();
 
+        const decoder = new TextDecoder();
+        let duration: number | null = null;
+        let progress = 0;
+
+        for await (const chunk of process.stderr) {
+            const output = decoder.decode(chunk);
+            if (!duration) {
+                const match = output.match(/Duration: (\d{2}):(\d{2}):(\d{2})/);
+                if (match) {
+                    duration = parseInt(match[1]) * 3600 + parseInt(match[2]) * 60 +
+                        parseInt(match[3]);
+                }
+            }
+            const timeMatch = output.match(/time=(\d{2}):(\d{2}):(\d{2})/);
+            if (timeMatch && duration) {
+                const currentTime = parseInt(timeMatch[1]) * 3600 + parseInt(timeMatch[2]) * 60 +
+                    parseInt(timeMatch[3]);
+                progress = currentTime / duration;
+                if (overallProgress) {
+                    overallProgress.render(progress, {
+                        text: `Converting ${basename(filePath)}`,
+                    });
+                }
+            }
+        }
+
         const { code, stderr } = await process.output();
 
         if (code !== 0) {
             console.error(
-                `Error converting ${filePath}: \n${new TextDecoder().decode(stderr).trim()}`,
+                `Error converting ${filePath}: \n${decoder.decode(stderr).trim()}`,
             );
             await Deno.remove(tempDir, { recursive: true });
             Deno.exit(1);
@@ -180,7 +206,7 @@ async function convertToHEVC(input: string) {
                 });
                 const { code, stderr } = await extractCommand.output();
                 if (code !== 0) {
-                    console.error(`Error extracting subtitle: ${new TextDecoder().decode(stderr)}`);
+                    console.error(`Error extracting subtitle: ${decoder.decode(stderr)}`);
                     await Deno.remove(tempDir, { recursive: true });
                     Deno.exit(1);
                 }
@@ -208,13 +234,13 @@ async function convertToHEVC(input: string) {
             width: 50,
             complete: '=',
             incomplete: '-',
-            display: ':bar :percent :etas',
+            display: ':bar :percent :etas :message',
         });
 
         for (let index = 0; index < files.length; index++) {
             const file = files[index];
-            await processFile(file);
-            await progressBar?.render(index + 1);
+            await processFile(file, progressBar);
+            progressBar.render(index + 1, { text: `Completed ${index + 1}/${files.length} files` });
         }
     } else {
         await processFile(input);
