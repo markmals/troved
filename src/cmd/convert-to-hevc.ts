@@ -7,7 +7,7 @@ import { ffmpeg, ffprobe } from './fast-forward.ts';
 async function convertToHEVC(input: string) {
     const isDirectory = (await Deno.stat(input)).isDirectory;
 
-    async function processFile(filePath: string, overallProgress?: ProgressBar) {
+    async function processFile(filePath: string) {
         const tempDir = await Deno.makeTempDir();
         const tempOutputPath = join(tempDir, `${basename(filePath, extname(filePath))}.mp4`);
         const finalOutputPath = join(
@@ -119,6 +119,11 @@ async function convertToHEVC(input: string) {
         let duration: number | null = null;
         let progress = 0;
 
+        const ffmpegProgressBar = new ProgressBar({
+            total: 100,
+            width: 50,
+        });
+
         try {
             for await (const chunk of process.stderr) {
                 const output = decoder.decode(chunk);
@@ -135,11 +140,9 @@ async function convertToHEVC(input: string) {
                         parseInt(timeMatch[2]) * 60 +
                         parseInt(timeMatch[3]);
                     progress = currentTime / duration;
-                    if (overallProgress) {
-                        overallProgress.render(progress, {
-                            text: `Converting ${basename(filePath)}`,
-                        });
-                    }
+                    ffmpegProgressBar.render(progress * 100, {
+                        text: `Converting ${basename(filePath)}`,
+                    });
                 }
             }
         } catch (error) {
@@ -196,15 +199,17 @@ async function convertToHEVC(input: string) {
         // Sort the files alphabetically
         files.sort((a, b) => a.localeCompare(b));
 
-        const progressBar = new ProgressBar({
+        const overallProgressBar = new ProgressBar({
             total: files.length,
             width: 50,
         });
 
         for (let index = 0; index < files.length; index++) {
             const file = files[index];
-            await processFile(file, progressBar);
-            progressBar.render(index + 1, { text: `Completed ${index + 1}/${files.length} files` });
+            await processFile(file, overallProgressBar);
+            overallProgressBar.render(index + 1, {
+                text: `Completed ${index + 1}/${files.length} files`,
+            });
         }
     } else {
         await processFile(input);
