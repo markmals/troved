@@ -194,6 +194,9 @@ async function convertToHEVC(input: string) {
             }
         }
 
+        // Sort the files alphabetically
+        files.sort((a, b) => a.localeCompare(b));
+
         const progressBar = new ProgressBar({
             total: files.length,
             width: 50,
