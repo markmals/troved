@@ -199,9 +199,6 @@ async function convertToHEVC(input: string) {
         const progressBar = new ProgressBar({
             total: files.length,
             width: 50,
-            complete: '=',
-            incomplete: '-',
-            display: ':bar :percent :etas :message',
         });
 
         for (let index = 0; index < files.length; index++) {
