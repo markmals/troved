@@ -124,7 +124,7 @@ async function convertToHEVC(input: string) {
             width: 50,
         });
 
-        console.dir(process.stderr);
+        console.dir(process);
         for await (const chunk of process.stderr) {
             const output = decoder.decode(chunk);
             if (!duration) {
