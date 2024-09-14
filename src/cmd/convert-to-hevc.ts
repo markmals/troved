@@ -139,6 +139,7 @@ async function convertToHEVC(input: string) {
                 });
                 const { code, stderr } = await extractProcess.output();
                 if (code !== 0) {
+                    const decoder = new TextDecoder();
                     console.error(`Error extracting subtitle: ${decoder.decode(stderr)}`);
                     await Deno.remove(tempDir, { recursive: true });
                     Deno.exit(1);
