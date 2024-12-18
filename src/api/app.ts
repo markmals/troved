@@ -4,7 +4,7 @@ import airDates from './routes/air-dates.ts';
 import search from './routes/search.ts';
 import subscribe from './routes/subscribe.ts';
 
-import { tmdb, trakt } from '../services/mod.ts';
+import { tmdb, trakt } from '~/services/mod.ts';
 
 const app = new OpenAPIHono();
 app.basePath('/api');
