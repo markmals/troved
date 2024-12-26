@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "bradlc.vscode-tailwindcss",
+        "christian-kohler.npm-intellisense",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "github.vscode-github-actions",
+        "ms-azuretools.vscode-docker",
+        "quicktype.quicktype",
+        "RapidAPI.vscode-rapidapi-client",
+        "unifiedjs.vscode-mdx",
+        // "vitest.explorer",
+        "wayou.vscode-todo-highlight"
+    ]
+}
