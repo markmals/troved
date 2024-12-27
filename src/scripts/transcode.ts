@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import path from "path";
 import { transcoder } from "../server/services";
 
 const transcode = new Command();
@@ -18,6 +19,11 @@ if (!options.watch) throw new Error("Must provide a folder to watch.");
 if (!options.outputMovies) throw new Error("Must provide a folder to output converted movies.");
 if (!options.outputTv) throw new Error("Must provide a folder to output converted TV shows.");
 
+// Expand relative paths to absolute paths
+options.watch = path.resolve(options.watch);
+options.outputMovies = path.resolve(options.outputMovies);
+options.outputTv = path.resolve(options.outputTv);
+
 const handle = transcoder.watch({
     input: options.watch,
     output: { tv: options.outputTv, movies: options.outputMovies },
@@ -26,4 +32,4 @@ const handle = transcoder.watch({
     audioBitrate: options.bitrate,
 });
 
-setTimeout(() => handle.unwatch(), 5000);
+// setTimeout(() => handle.unwatch(), 5000);
