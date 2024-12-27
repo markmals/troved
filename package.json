@@ -3,6 +3,7 @@
     "type": "module",
     "scripts": {
         "dev": "npm run db:bootstrap && react-router dev --host",
+        "postinstall": "npm run generate",
         "build": "tsx --env-file=.env ./src/scripts/build.ts",
         "start": "NODE_ENV=production node --env-file=.env ./src/scripts/start.js",
         "db:bootstrap": "tsx --env-file=.env ./src/scripts/db.bootstrap.ts",
@@ -11,7 +12,8 @@
         "generate:trakt": "tsx ./src/scripts/generate-trakt-api.ts",
         "fmt": "prettier -w .",
         "lint": "eslint --cache --fix .",
-        "typecheck": "react-router typegen && tsc"
+        "typecheck": "react-router typegen && tsc",
+        "typecheck:watch": "react-router typegen && tsc --watch"
     },
     "dependencies": {
         "@deno/kv": "^0.8.4",
