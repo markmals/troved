@@ -18,3 +18,4 @@
 # Generated OpenAPI files
 /src/server/services/tmdb/api/types.ts
 /src/server/services/trakt/api/types.ts
+*.tsbuildinfo
