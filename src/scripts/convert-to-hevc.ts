@@ -1,9 +1,10 @@
 import { Command } from "commander";
 import ProgressBar from "progress";
-import { copyFile, mkdtemp, readdir, rename, rm, stat } from "node:fs/promises";
-import { basename, dirname, extname, join } from "node:path";
+import { access, copyFile, mkdtemp, readdir, rename, rm, stat } from "node:fs/promises";
+import path, { basename, dirname, extname, join } from "node:path";
 import { tmpdir } from "node:os";
-import { ffmpeg, ffprobe } from "../server/lib/fast-forward";
+import { existsSync } from "node:fs";
+import { ffmpeg, ffprobe, type FFprobeResult } from "../server/lib/fast-forward";
 
 async function moveFile(source: string, destination: string) {
     try {
@@ -22,6 +23,36 @@ async function moveFile(source: string, destination: string) {
 async function convertToHEVC(input: string) {
     const isDirectory = (await stat(input)).isDirectory();
 
+    function externalSubs(input: string): string[] {
+        const dir = path.dirname(input);
+        const filename = path.basename(input, path.extname(input));
+        const subtitleExts = ["srt", "ttxt", "sub", "txt", "vtt"];
+        let foundSubs = [];
+
+        for (const ext of subtitleExts) {
+            const subtitleFile = path.join(dir, `${filename}.${ext}`);
+            if (existsSync(subtitleFile)) {
+                foundSubs.push(subtitleFile);
+            }
+        }
+
+        return foundSubs;
+    }
+
+    function embeddedSubs(fileInfo: FFprobeResult): string[] {
+        const subtitleStreams = fileInfo.streams.filter(stream => stream.codec_type === "subtitle");
+        const bitmapSubtitleFormats = ["dvdsub", "dvbsub", "pgssub", "xsub"];
+        let foundFormats = [];
+
+        for (const subStream of subtitleStreams) {
+            if (bitmapSubtitleFormats.includes(subStream.codec_name)) {
+                foundFormats.push(subStream.codec_name);
+            }
+        }
+
+        return foundFormats;
+    }
+
     async function processFile(filePath: string) {
         const tempDir = await mkdtemp(join(tmpdir(), "hevc-"));
         const tempOutputPath = join(tempDir, `${basename(filePath, extname(filePath))}.mp4`);
@@ -38,8 +69,15 @@ async function convertToHEVC(input: string) {
         const isHEVC = videoStream?.codec_name === "hevc";
         const hasHVC1Tag = videoStream?.codec_tag_string === "hvc1";
 
+        // Check for external subtitles
+        const subtitlesFile = externalSubs(filePath).pop();
+
+        // Check for embedded bitmap subtitles; these cannot stay embedded
+        const embeddedSubtitles = embeddedSubs(fileInfo);
+
         // Case: already HEVC with hvc1 tag, may just need subtitles
         if (isHEVC && hasHVC1Tag) {
+            // TODO: embed external subtitles first
             console.log(`${filePath} is already HEVC with hvc1 tag. Skipping.`);
             return;
         }
@@ -51,7 +89,10 @@ async function convertToHEVC(input: string) {
                 output: tempOutputPath,
                 videoCodec: "copy",
                 audioCodec: "copy",
-                subtitleCodec: "mov_text",
+                // TODO: support standard, SDH, forced, etc
+                subtitles: hasSubtitles
+                    ? [{ languageCode: "eng", input: subtitlesFile, codec: "mov_text" }]
+                    : [],
                 map: "0",
                 tag: { v: "hvc1" },
                 metadata: { "s:a:0": { language: "eng", title: "ENG" } },
@@ -90,23 +131,6 @@ async function convertToHEVC(input: string) {
             }
         }
 
-        // Determine subtitle handling
-        const subtitleStreams = fileInfo.streams.filter(stream => stream.codec_type === "subtitle");
-        let subtitleCodec: string | undefined = "mov_text";
-        let extractSubtitles = false;
-
-        const bitmapSubtitleFormats = ["dvdsub", "dvbsub", "pgssub", "xsub"];
-        for (const subStream of subtitleStreams) {
-            if (bitmapSubtitleFormats.includes(subStream.codec_name)) {
-                extractSubtitles = true;
-                break;
-            }
-        }
-
-        if (extractSubtitles) {
-            subtitleCodec = undefined;
-        }
-
         const { code, stderr } = await ffmpeg({
             input: [filePath],
             output: tempOutputPath,
@@ -115,7 +139,10 @@ async function convertToHEVC(input: string) {
             preset: "medium",
             crf: 23,
             audioBitrate,
-            subtitleCodec,
+            // TODO: support standard, SDH, forced, etc
+            subtitles: subtitlesFile
+                ? [{ languageCode: "eng", input: subtitlesFile, codec: "mov_text" }]
+                : [],
             tag: { v: "hvc1" },
             metadata: { "s:a:0": { language: "eng", title: "ENG" } },
             verbosity: "error",
@@ -127,7 +154,12 @@ async function convertToHEVC(input: string) {
             process.exit(1);
         }
 
+        // Look for embedded bitmap subtitles; these cannot stay embedded
+        const subtitleStreams = fileInfo.streams.filter(stream => stream.codec_type === "subtitle");
+        const extractSubtitles = embeddedSubtitles.length > 0;
+
         if (extractSubtitles) {
+            // We need i below for the map arg
             for (let i = 0; i < subtitleStreams.length; i++) {
                 const subStream = subtitleStreams[i];
                 const subExt = subStream.codec_name === "subrip" ? "srt" : subStream.codec_name;
@@ -138,6 +170,7 @@ async function convertToHEVC(input: string) {
                 const { code, stderr } = await ffmpeg({
                     input: [filePath],
                     output: subtitleOutputPath,
+                    subtitles: [],
                     map: `0:s:${i}`,
                     verbosity: "error",
                 });

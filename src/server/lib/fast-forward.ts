@@ -50,7 +50,11 @@ export interface FFmpegOptions {
     preset?: FFmpegPreset;
     crf?: number;
     audioBitrate?: string;
-    subtitleCodec?: string;
+    subtitles: {
+        languageCode: string;
+        input: string;
+        codec: string;
+    }[];
     map?: string;
     tag?: { [key: string]: string };
     metadata?: { [key: string]: { [key: string]: string } };
@@ -178,15 +182,16 @@ export async function ffmpeg({
     output,
     videoCodec,
     audioCodec,
+    subtitles,
     preset,
     crf,
     audioBitrate,
-    subtitleCodec,
     map,
     tag,
     metadata,
     verbosity,
 }: FFmpegOptions): Promise<{ code?: number; stderr: string }> {
+    input.push(...subtitles.map(s => s.input));
     const args = input.map(i => ["-i", i]).flat();
 
     if (videoCodec) args.push("-c:v", videoCodec);
@@ -194,7 +199,7 @@ export async function ffmpeg({
     if (preset) args.push("-preset", preset);
     if (crf !== undefined) args.push("-crf", crf.toString());
     if (audioBitrate) args.push("-b:a", audioBitrate);
-    if (subtitleCodec) args.push("-c:s", subtitleCodec);
+    if (subtitles.length) args.push("-c:s", "mov_text");
     if (map) args.push("-map", map);
     if (tag) {
         Object.entries(tag).forEach(([key, value]) => {
