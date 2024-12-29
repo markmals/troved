@@ -38,15 +38,16 @@ async function convertToHEVC(input: string) {
         const isHEVC = videoStream?.codec_name === "hevc";
         const hasHVC1Tag = videoStream?.codec_tag_string === "hvc1";
 
+        // Case: already HEVC with hvc1 tag, may just need subtitles
         if (isHEVC && hasHVC1Tag) {
             console.log(`${filePath} is already HEVC with hvc1 tag. Skipping.`);
             return;
         }
 
+        // Case: just needs hvc1 tag, may also need subtitles
         if (isHEVC && !hasHVC1Tag) {
-            // Apply hvc1 tag only
             const { code, stderr } = await ffmpeg({
-                input: filePath,
+                input: [filePath],
                 output: tempOutputPath,
                 videoCodec: "copy",
                 audioCodec: "copy",
@@ -70,7 +71,8 @@ async function convertToHEVC(input: string) {
             return;
         }
 
-        // If not HEVC, proceed with full conversion
+        // Case: not HEVC, proceed with full conversion
+
         // Determine audio codec and channel layout
         const audioStream = fileInfo.streams.find(stream => stream.codec_type === "audio");
         const currentAudioCodec = audioStream?.codec_name;
@@ -106,7 +108,7 @@ async function convertToHEVC(input: string) {
         }
 
         const { code, stderr } = await ffmpeg({
-            input: filePath,
+            input: [filePath],
             output: tempOutputPath,
             videoCodec: "libx265",
             audioCodec,
@@ -134,7 +136,7 @@ async function convertToHEVC(input: string) {
                     `${basename(finalOutputPath, ".mp4")}_${i}.${subExt}`,
                 );
                 const { code, stderr } = await ffmpeg({
-                    input: filePath,
+                    input: [filePath],
                     output: subtitleOutputPath,
                     map: `0:s:${i}`,
                     verbosity: "error",
@@ -147,6 +149,7 @@ async function convertToHEVC(input: string) {
                 }
             }
         }
+
         await rm(filePath);
         await moveFile(tempOutputPath, finalOutputPath);
         console.log(`Successfully converted ${filePath} to HEVC`);
@@ -173,6 +176,7 @@ async function convertToHEVC(input: string) {
             width: 50,
         });
 
+        // Report progress on a per-file basis
         for (let index = 0; index < files.length; index++) {
             const file = files[index];
             await processFile(file);

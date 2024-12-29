@@ -43,7 +43,7 @@ export type FFmpegPreset =
     | "placebo";
 
 export interface FFmpegOptions {
-    input: string;
+    input: string[];
     output: string;
     videoCodec?: string;
     audioCodec?: string;
@@ -187,7 +187,7 @@ export async function ffmpeg({
     metadata,
     verbosity,
 }: FFmpegOptions): Promise<{ code?: number; stderr: string }> {
-    const args: string[] = ["-i", input];
+    const args = input.map(i => ["-i", i]).flat();
 
     if (videoCodec) args.push("-c:v", videoCodec);
     if (audioCodec) args.push("-c:a", audioCodec);
