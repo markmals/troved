@@ -1,33 +1,20 @@
-import { defineConfig } from "vite";
-
-import honoDevServer, { defaultOptions } from "@hono/vite-dev-server";
-import nodeAdapter from "@hono/vite-dev-server/node";
+import deno from "@deno/vite-plugin";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
-import tsconfigPaths from "vite-tsconfig-paths";
-import { reactCompiler } from "./react-compiler.plugin";
+import { defineConfig } from "vite";
 
-const SERVER_ENTRY = "./src/server/index.ts";
-
-export default defineConfig(({ isSsrBuild }) => ({
-    plugins: [
-        reactRouter(),
-        reactCompiler(),
-        tailwindcss(),
-        honoDevServer({
-            entry: SERVER_ENTRY,
-            adapter: nodeAdapter,
-            exclude: [...defaultOptions.exclude, "/assets/**", "/src/**"],
-            injectClientScript: false,
-        }),
-        tsconfigPaths(),
-    ],
-    build: {
-        target: "ES2022",
-        rollupOptions: isSsrBuild ? { input: SERVER_ENTRY } : undefined,
+export default defineConfig({
+    plugins: [deno(), reactRouter(), tailwindcss()],
+    environments: {
+        ssr: {
+            build: {
+                target: "ESNext",
+            },
+            resolve: {
+                conditions: ["deno"],
+                externalConditions: ["deno"],
+            },
+        },
     },
-    server: {
-        port: Number.parseInt(process.env.PORT || "4321"),
-        // fs: { allow: ["src/app"] },
-    },
-}));
+    server: { port: Number.parseInt(Deno.env.get("PORT") || "1612") },
+});

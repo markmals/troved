@@ -1,18 +1,104 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "npm",
-			"script": "typecheck:watch",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"problemMatcher": [
-				"$tsc-watch"
-			],
-			"label": "npm: typecheck:watch",
-			"detail": "react-router typegen && tsc --watch"
-		},
-	]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "dev",
+            "detail": "Start Vite development server",
+            "type": "deno",
+            "command": "task",
+            "args": ["dev"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build",
+            "detail": "Build the project with Vite",
+            "type": "deno",
+            "command": "task",
+            "args": ["build"],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "serve",
+            "detail": "Serve the built project",
+            "type": "deno",
+            "command": "task",
+            "args": ["serve"],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "typecheck",
+            "detail": "Runs TypeScript checker and RR7 type generator in parallel",
+            "group": "build",
+            "dependsOn": ["deno: typecheck:watch", "deno: typegen:watch"],
+            "dependsOrder": "parallel"
+        },
+        {
+            "label": "typecheck:sync",
+            "detail": "Run TypeScript type checking synchronously",
+            "type": "deno",
+            "command": "task",
+            "args": ["typecheck"],
+            "group": "build",
+            "problemMatcher": ["$deno"]
+        },
+        // Display TypeScript issues across the project in the VS Code Problems panel natively
+        {
+            "type": "deno",
+            "command": "check",
+            "args": ["app", "--watch"],
+            "problemMatcher": ["$deno"],
+            "label": "deno: typecheck:watch",
+            "detail": "deno check app --watch"
+        },
+        {
+            "type": "deno",
+            "command": "task",
+            "args": ["typegen", "--watch"],
+            "problemMatcher": [],
+            "label": "deno: typegen:watch",
+            "detail": "deno task typegen --watch"
+        },
+        {
+            "label": "typegen",
+            "detail": "Generate React Router types",
+            "type": "deno",
+            "command": "task",
+            "args": ["typegen"],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "lint",
+            "detail": "Run Biome linter",
+            "type": "deno",
+            "command": "task",
+            "args": ["lint"],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "format",
+            "detail": "Format code with Deno formatter",
+            "type": "deno",
+            "command": "task",
+            "args": ["fmt"],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "check",
+            "detail": "Run format and lint",
+            "type": "deno",
+            "command": "task",
+            "args": ["check"],
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
 }

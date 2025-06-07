@@ -1,53 +1,33 @@
 {
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "typescript.updateImportsOnFileMove.enabled": "always",
+    "deno.enable": true,
+    "biome.enabled": true,
+
+    "prettier.enable": false,
+    "eslint.enable": false,
 
     "editor.stickyScroll.enabled": true,
-
-    "prettier.enable": true,
-    "eslint.enable": true,
-
-    "biome.enabled": false,
-    "deno.enable": false,
-
     "editor.codeActionsOnSave": {
         "source.fixAll": "explicit",
         "source.addMissingImports": "explicit",
-        "source.fixAll.eslint": "explicit",
+        "source.fixAll.biome": "explicit",
         "source.fixAll.ts": "explicit"
     },
 
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "denoland.vscode-deno",
     "editor.formatOnSave": true,
 
     // Language-specific settings
     "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "denoland.vscode-deno"
     },
     "[tsx]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[mdx]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[markdown]": {
-        "editor.unicodeHighlight.ambiguousCharacters": false,
-        "editor.unicodeHighlight.invisibleCharacters": false,
-        "diffEditor.ignoreTrimWhitespace": false,
-        "editor.wordWrap": "on",
-        "editor.quickSuggestions": {
-            "comments": "off",
-            "strings": "off",
-            "other": "off"
-        },
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "denoland.vscode-deno"
     },
     "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "denoland.vscode-deno"
     },
-    "[yaml]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "[jsonc]": {
+        "editor.defaultFormatter": "denoland.vscode-deno"
     },
 
     "explorer.fileNesting.enabled": true,
@@ -56,21 +36,21 @@
         "*.css": "$(capture).css.map, $(capture).*.css",
         ".env": "*.env, .env.*",
         ".env.local": "*.env, .env.*",
-        "dockerfile": ".dockerignore, docker-compose.*, dockerfile*",
-        "fly.toml": ".dockerignore, docker-compose.*, dockerfile*, litefs*",
-        "package.json": ".github*, .vscode*, .npm*, .nvmrc, .prettier*, tsconfig.*, eslint*, prettier*, package-lock.json, workspace.json",
+        "deno.json*": ".github*, .vscode*, .prettier*, prettier*, workspace.json, *.lock, biome.json*, package.json",
         "readme*": "authors, backers*, changelog*, citation*, code_of_conduct*, codeowners, contributing*, contributors, copying, credits, governance.md, history.md, license*, maintainers, readme*, security.md, sponsors*",
         "*.ts": "$(capture).ts.map, $(capture).*.ts, $(capture)_*.ts",
         "*.tsx": "$(capture).ts, $(capture).*.tsx, $(capture)_*.ts, $(capture)_*.tsx",
-        "vite.config.*": "cypress.*, drizzle.config.*, react-router.config.*, tailwind.config.*, vitest.config.*, *.plugin.ts"
+        "vite.config.*": "drizzle.config.*, react-router.config.*, vitest.config.*, *.plugin.ts"
     },
 
     // Which files to hide in the VS Code file-tree sidebar
     "files.exclude": {
         "**/.DS_Store": true,
-        // "database/app.db*": true,
         "build": true,
-        ".react-router": true
+        ".react-router": true,
+        "package.json": true,
+        ".github": true,
+        ".cursor": true
     },
 
     "tailwindCSS.experimental.classRegex": [
