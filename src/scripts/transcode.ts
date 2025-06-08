@@ -2,7 +2,7 @@ import { transcoder } from "$api/services/mod.ts";
 import { Command } from "@cliffy/command";
 import { resolve } from "@std/path";
 
-const { watch, outputMovies, outputTv, quality, bitrate, forceHevc } = await new Command()
+const { options } = await new Command()
     .name("transcode")
     .description("Transcode video files")
     .option("-w, --watch <dir:string>", "Folder to watch", { required: true })
@@ -16,6 +16,8 @@ const { watch, outputMovies, outputTv, quality, bitrate, forceHevc } = await new
     .option("-b, --bitrate <number:string>", "Audio bitrate")
     .option("-h, --force-hevc", "Force HEVC encoding")
     .parse(Deno.args);
+
+const { watch, outputMovies, outputTv, quality, bitrate, forceHevc } = options;
 
 // Expand relative paths to absolute paths
 const resolvedWatch = resolve(watch);
