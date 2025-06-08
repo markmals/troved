@@ -14,7 +14,13 @@
             "dependencies": ["build"]
         },
 
-        "db-bootstrap": "deno run -A ./src/scripts/db-bootstrap.ts",
+        "db-bootstrap": {
+            "command": "deno task db-push",
+            "dependencies": ["db-clean"]
+        },
+        "db-clean": "deno run -A ./src/scripts/db-bootstrap.ts",
+        "db-push": "deno run -A ./src/scripts/db-push.ts",
+        "db-generate": "deno run -A ./src/scripts/db-generate.ts",
 
         "generate-tmdb": "deno run -A ./src/scripts/generate-tmdb-api.ts",
         "generate-trakt": "deno run -A ./src/scripts/generate-trakt-api.ts",
@@ -44,11 +50,13 @@
         "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.4",
         "@hono/zod-openapi": "npm:@hono/zod-openapi@^0.18.3",
         "@mizchi/drizzle-orm": "npm:@mizchi/drizzle-orm@^0.41.1",
+        "@radix-ui/react-slot": "npm:@radix-ui/react-slot@^1.2.3",
         "@react-router/dev": "npm:@react-router/dev@7.6.2",
         "@react-router/fs-routes": "npm:@react-router/fs-routes@^7.6.2",
         "@react-router/serve": "npm:@react-router/serve@7.6.2",
         "@std/assert": "jsr:@std/assert@^1.0.12",
         // "@std/cli": "jsr:@std/cli@^1.0.16",
+        "@std/fs": "jsr:@std/fs@^1.0.18",
         "@std/http": "jsr:@std/http@^1.0.14",
         "@std/jsonc": "jsr:@std/jsonc@^1.0.2",
         "@std/path": "jsr:@std/path@^1.0.8",
@@ -56,6 +64,8 @@
         "@types/react": "npm:@types/react@^19.1.0",
         "@types/react-dom": "npm:@types/react-dom@^19.1.0",
         "apib2swagger": "npm:apib2swagger@^1.17.1",
+        "class-variance-authority": "npm:class-variance-authority@^0.7.1",
+        "clsx": "npm:clsx@^2.1.1",
         "downpour": "npm:downpour@^0.1.1",
         "execa": "npm:execa@^9.5.2",
         "hono": "npm:hono@^4.7.6",
@@ -67,7 +77,9 @@
         "react": "npm:react@^19.1.0",
         "react-dom": "npm:react-dom@^19.1.0",
         "react-router": "npm:react-router@^7.6.2",
+        "tailwind-merge": "npm:tailwind-merge@^3.3.0",
         "tailwindcss": "npm:tailwindcss@^4.1.3",
+        "tailwindcss-animate": "npm:tailwindcss-animate@^1.0.7",
         "type-fest": "npm:type-fest@^4.30.2",
         "vite": "npm:vite@^6.2.6",
         "zod": "npm:zod@^3.25.56"

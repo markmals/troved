@@ -1,5 +1,5 @@
 import { Form, useNavigation } from "react-router";
-
+import { Button } from "~/components/ui/button.tsx";
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
 
@@ -80,13 +80,14 @@ export function Welcome({
                                 required
                                 type="email"
                             />
-                            <button
-                                className="h-10 w-full rounded-lg bg-blue-500 px-3 text-white hover:bg-blue-600"
+                            <Button
+                                className="w-full"
                                 disabled={navigation.state === "submitting"}
                                 type="submit"
+                                variant="default"
                             >
                                 Sign Guest Book
-                            </button>
+                            </Button>
                             {guestBookError && (
                                 <p className="text-red-500 dark:text-red-400">{guestBookError}</p>
                             )}
