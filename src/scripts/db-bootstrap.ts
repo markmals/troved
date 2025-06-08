@@ -1,4 +1,4 @@
-// import "jsr:@std/dotenv/load";
+import "jsr:@std/dotenv/load";
 import { assert } from "@std/assert";
 
 const DATABASE_URL = Deno.env.get("DATABASE_URL");
@@ -14,5 +14,5 @@ try {
     console.log("Database bootstrapped successfully");
 } catch (error) {
     console.error("Error bootstrapping database:", error);
-    process.exit(1);
+    Deno.exit(1);
 }
