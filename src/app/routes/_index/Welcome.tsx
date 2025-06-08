@@ -6,22 +6,19 @@ import logoLight from "./logo-light.svg";
 export function Welcome({
     guestBook,
     guestBookError,
-    message,
 }: {
     guestBook: {
         name: string;
         id: string;
     }[];
     guestBookError?: string;
-    message: string;
 }) {
     const navigation = useNavigation();
 
     return (
-        <main className="flex items-center justify-center pb-4 pt-16">
+        <main className="flex items-center justify-center pt-16 pb-4">
             <div className="flex min-h-0 flex-1 flex-col items-center gap-16">
                 <header className="flex flex-col items-center gap-9">
-                    <h1 className="sr-only">{message}</h1>
                     <div className="w-[500px] max-w-[100vw] p-4">
                         <img
                             alt="React Router"
@@ -37,14 +34,14 @@ export function Welcome({
                 </header>
                 <div className="w-full max-w-[300px] space-y-6 px-4">
                     <nav className="space-y-4 rounded-3xl border border-gray-200 p-6 dark:border-gray-700">
-                        <p className="text-center leading-6 text-gray-700 dark:text-gray-200">
+                        <p className="text-center text-gray-700 leading-6 dark:text-gray-200">
                             What&apos;s next?
                         </p>
                         <ul>
                             {resources.map(({ href, text, icon }) => (
                                 <li key={href}>
                                     <a
-                                        className="group flex items-center gap-3 self-stretch p-3 leading-normal text-blue-700 hover:underline dark:text-blue-500"
+                                        className="group flex items-center gap-3 self-stretch p-3 text-blue-700 leading-normal hover:underline dark:text-blue-500"
                                         href={href}
                                         rel="noreferrer"
                                         target="_blank"
@@ -60,7 +57,7 @@ export function Welcome({
                         <Form
                             className="w-full max-w-lg space-y-4"
                             method="post"
-                            onSubmit={event => {
+                            onSubmit={(event) => {
                                 if (navigation.state === "submitting") {
                                     event.preventDefault();
                                 }
@@ -71,16 +68,16 @@ export function Welcome({
                             }}
                         >
                             <input
-                                required
                                 className="h-10 w-full rounded-lg border border-gray-200 px-3 focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:ring-blue-500"
                                 name="name"
                                 placeholder="Name"
+                                required
                             />
                             <input
-                                required
                                 className="h-10 w-full rounded-lg border border-gray-200 px-3 focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:ring-blue-500"
                                 name="email"
                                 placeholder="your@email.com"
+                                required
                                 type="email"
                             />
                             <button
@@ -95,9 +92,8 @@ export function Welcome({
                             )}
                         </Form>
                         <ul className="text-center">
-                            {<li className="p-3">{message}</li>}
                             {guestBook.map(({ id, name }) => (
-                                <li key={id} className="p-3">
+                                <li className="p-3" key={id}>
                                     {name}
                                 </li>
                             ))}

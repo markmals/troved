@@ -27,13 +27,10 @@ export async function action({ request }: Route.ActionArgs) {
     }
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
+export async function loader({}: Route.LoaderArgs) {
     const guestBook = await db.select().from(GuestBook);
 
-    return {
-        guestBook,
-        message: context.VALUE_FROM_HONO,
-    };
+    return { guestBook };
 }
 
 export default function Home({ actionData, loaderData }: Route.ComponentProps) {
@@ -41,11 +38,9 @@ export default function Home({ actionData, loaderData }: Route.ComponentProps) {
         <>
             <title>New React Router App</title>
             <meta content="Welcome to React Router!" name="description" />
-
             <Welcome
                 guestBook={loaderData.guestBook}
                 guestBookError={actionData?.guestBookError}
-                message={loaderData.message}
             />
         </>
     );
