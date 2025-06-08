@@ -1,6 +1,6 @@
 # Tasks
 
-- Convert src-old/scripts
+- ~~Convert src-old/scripts~~
 - Migrate Deno KV to `node:sqlite` + Drizzle
 - Write custom DrizzleKit scripts for Deno & `node:sqlite`
 - Migrate from React Router context to unstable_middleware

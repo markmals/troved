@@ -1,19 +1,17 @@
-import { existsSync } from "node:fs";
-import { copyFile, mkdtemp, readdir, rename, rm, stat } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import path, { basename, dirname, extname, join } from "node:path";
-import { Command } from "commander";
+import { ffmpeg, ffprobe, type FFprobeResult } from "$api/lib/fast-forward.ts";
+import { Command } from "@cliffy/command";
+import { exists } from "@std/fs";
+import { basename, dirname, extname, join } from "@std/path";
 import ProgressBar from "progress";
-import { ffmpeg, ffprobe, type FFprobeResult } from "../../src/api/lib/fast-forward.ts";
 
 async function moveFile(source: string, destination: string) {
     try {
-        await rename(source, destination);
+        await Deno.rename(source, destination);
     } catch (error) {
         if (error instanceof Error && error.message.includes("EXDEV")) {
             // If rename fails due to cross-device error, use copy and remove
-            await copyFile(source, destination);
-            await rm(source);
+            await Deno.copyFile(source, destination);
+            await Deno.remove(source);
         } else {
             throw error;
         }
@@ -21,17 +19,17 @@ async function moveFile(source: string, destination: string) {
 }
 
 async function convertToHEVC(input: string) {
-    const isDirectory = (await stat(input)).isDirectory();
+    const isDirectory = (await Deno.stat(input)).isDirectory;
 
     function externalSubs(input: string): string[] {
-        const dir = path.dirname(input);
-        const filename = path.basename(input, path.extname(input));
+        const dir = dirname(input);
+        const filename = basename(input, extname(input));
         const subtitleExts = ["srt", "ttxt", "sub", "txt", "vtt"];
         const foundSubs = [];
 
         for (const ext of subtitleExts) {
-            const subtitleFile = path.join(dir, `${filename}.${ext}`);
-            if (existsSync(subtitleFile)) {
+            const subtitleFile = join(dir, `${filename}.${ext}`);
+            if (exists(subtitleFile)) {
                 foundSubs.push(subtitleFile);
             }
         }
@@ -56,7 +54,7 @@ async function convertToHEVC(input: string) {
     }
 
     async function processFile(filePath: string) {
-        const tempDir = await mkdtemp(join(tmpdir(), "hevc-"));
+        const tempDir = await Deno.makeTempDir({ prefix: "hevc-" });
         const tempOutputPath = join(tempDir, `${basename(filePath, extname(filePath))}.mp4`);
         const finalOutputPath = join(
             dirname(filePath),
@@ -92,7 +90,7 @@ async function convertToHEVC(input: string) {
                 videoCodec: "copy",
                 audioCodec: "copy",
                 // TODO: support standard, SDH, forced, etc
-                subtitles: hasSubtitles
+                subtitles: subtitlesFile
                     ? [{ languageCode: "eng", input: subtitlesFile, codec: "mov_text" }]
                     : [],
                 map: "0",
@@ -102,15 +100,15 @@ async function convertToHEVC(input: string) {
             });
 
             if (code === 0) {
-                await rm(filePath);
+                await Deno.remove(filePath);
                 await moveFile(tempOutputPath, finalOutputPath);
                 console.log(`Applied hvc1 tag to ${filePath}`);
             } else {
                 console.error(`Error applying hvc1 tag to ${filePath}: ${stderr}`);
-                await rm(tempDir, { recursive: true });
-                process.exit(1);
+                await Deno.remove(tempDir, { recursive: true });
+                Deno.exit(1);
             }
-            await rm(tempDir, { recursive: true });
+            await Deno.remove(tempDir, { recursive: true });
             return;
         }
 
@@ -122,7 +120,7 @@ async function convertToHEVC(input: string) {
         const channelLayout = audioStream?.channel_layout;
 
         let audioCodec = "copy";
-        let audioBitrate;
+        let audioBitrate: string | undefined;
         if (currentAudioCodec !== "aac" && currentAudioCodec !== "eac3") {
             if (channelLayout === "stereo" || channelLayout === "mono") {
                 audioCodec = "aac";
@@ -152,8 +150,8 @@ async function convertToHEVC(input: string) {
 
         if (code !== 0) {
             console.error(`Error converting ${filePath}: ${stderr}`);
-            await rm(tempDir, { recursive: true });
-            process.exit(1);
+            await Deno.remove(tempDir, { recursive: true });
+            Deno.exit(1);
         }
 
         // Look for embedded bitmap subtitles; these cannot stay embedded
@@ -181,23 +179,26 @@ async function convertToHEVC(input: string) {
 
                 if (code !== 0) {
                     console.error(`Error extracting subtitle: ${stderr}`);
-                    await rm(tempDir, { recursive: true });
-                    process.exit(1);
+                    await Deno.remove(tempDir, { recursive: true });
+                    Deno.exit(1);
                 }
             }
         }
 
-        await rm(filePath);
+        await Deno.remove(filePath);
         await moveFile(tempOutputPath, finalOutputPath);
         console.log(`Successfully converted ${filePath} to HEVC`);
-        await rm(tempDir, { recursive: true });
+        await Deno.remove(tempDir, { recursive: true });
     }
 
     if (isDirectory) {
         const files = [];
-        const entries = await readdir(input, { withFileTypes: true });
+        const entries = [];
+        for await (const entry of Deno.readDir(input)) {
+            entries.push(entry);
+        }
         for (const entry of entries) {
-            if (entry.isFile()) {
+            if (entry.isFile) {
                 const ext = extname(entry.name).toLowerCase();
                 if ([".mp4", ".mkv", ".avi", ".mov"].includes(ext)) {
                     files.push(join(input, entry.name));
@@ -224,19 +225,16 @@ async function convertToHEVC(input: string) {
     }
 }
 
-const program = new Command();
-
-program
+await new Command()
     .name("convert-to-hevc")
     .description("Convert video files to HEVC format or apply hvc1 tag if already HEVC")
-    .option("-i, --input <input>", "Path to video file or directory")
-    .action(async ({ input }) => {
+    .arguments("<input:string>")
+    .action(async (input: string) => {
         try {
             await convertToHEVC(input);
         } catch (error) {
             console.error(`${error}`);
-            process.exit(1);
+            Deno.exit(1);
         }
-    });
-
-program.parse(process.argv);
+    })
+    .parse(Deno.args);
