@@ -5,6 +5,6 @@ export default {
     appDirectory: "src/app",
     future: {
         unstable_viteEnvironmentApi: true,
-        unstable_middleware: true,
+        // unstable_middleware: true,
     },
 } satisfies Config;

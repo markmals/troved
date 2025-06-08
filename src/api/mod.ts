@@ -1,12 +1,35 @@
-import { Hono } from "hono";
-import type { AppLoadContext } from "react-router";
-import { guestBook } from "./routes/guest-book.ts";
+import AirDates from "$api/routes/air-dates.ts";
+import Search from "$api/routes/search.ts";
+import Subscribe from "$api/routes/subscribe.ts";
+import { OpenAPIHono } from "@hono/zod-openapi";
+import { tmdb, trakt } from "./services/mod.ts";
 
-export type ReactRouterBindings = { Bindings: { context: AppLoadContext } };
+const api = new OpenAPIHono();
+api.basePath("/api");
 
-const api = new Hono<ReactRouterBindings>().basePath("/api");
+api.openapi(Search, async (c) => {
+    const results = await tmdb.searchTV(c.req.valid("query").q);
 
-// Sub-routes:
-api.route("/", guestBook);
+    return c.json(
+        results?.results?.map(({ id, overview, name }) => ({
+            id,
+            overview,
+            name,
+        })) ?? [],
+        200,
+    );
+});
 
-export { api };
+api.openapi(AirDates, async (c) => {
+    const response = await trakt.airDates({ showId: c.req.valid("query").id });
+    return c.json(response);
+});
+
+api.openapi(Subscribe, (c) => c.json(c.req.valid("json"), 200));
+
+api.doc("/doc", {
+    openapi: "3.1.0",
+    info: { title: "Trove", version: "0.1.0" },
+});
+
+export default api;

@@ -1,8 +1,9 @@
-import { Context, KvContext } from "src/server/context";
+import { db } from "$db/mod.ts";
+import { GuestBook } from "$db/schema.ts";
 import type { Route } from "./+types/route";
-import { Welcome } from "./Welcome";
+import { Welcome } from "./Welcome.tsx";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
     return [
         { title: "New React Router App" },
         { name: "description", content: "Welcome to React Router!" },
@@ -23,21 +24,15 @@ export async function action({ request }: Route.ActionArgs) {
         return { guestBookError: "Name and email are required" };
     }
 
-    const kv = Context.get(KvContext);
     try {
-        const uuid = crypto.randomUUID();
-        await kv.set(["guest-book", uuid], { name, email });
+        await db.insert(GuestBook).values({ name, email });
     } catch {
         return { guestBookError: "Error adding to guest book" };
     }
 }
 
 export async function loader({ context }: Route.LoaderArgs) {
-    const kv = Context.get(KvContext);
-
-    const guestBook = (
-        await Array.fromAsync(kv.list<{ name: string; email: string }>({ prefix: ["guest-book"] }))
-    ).map(entry => ({ id: entry.key.at(-1) as string, ...entry.value }));
+    const guestBook = await db.select().from(GuestBook);
 
     return {
         guestBook,
