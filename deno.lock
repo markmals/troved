@@ -25,6 +25,7 @@
     "npm:@biomejs/biome@^2.0.0-beta.6": "2.0.0-beta.6",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.4_vite@6.3.5__picomatch@4.0.2_@types+node@22.15.15",
     "npm:@hono/zod-openapi@~0.18.3": "0.18.4_hono@4.7.11_zod@3.25.56",
+    "npm:@mizchi/drizzle-orm@~0.41.1": "0.41.1",
     "npm:@react-router/dev@7.6.2": "7.6.2_@react-router+serve@7.6.2__react-router@7.6.2___react@19.1.0___react-dom@19.1.0____react@19.1.0__express@4.21.2__react@19.1.0__react-dom@19.1.0___react@19.1.0_react-router@7.6.2__react@19.1.0__react-dom@19.1.0___react@19.1.0_vite@6.3.5__picomatch@4.0.2_@babel+core@7.27.4_react@19.1.0_react-dom@19.1.0__react@19.1.0_@types+node@22.15.15",
     "npm:@react-router/fs-routes@^7.6.2": "7.6.2_@react-router+dev@7.6.2__@react-router+serve@7.6.2___react-router@7.6.2____react@19.1.0____react-dom@19.1.0_____react@19.1.0___express@4.21.2___react@19.1.0___react-dom@19.1.0____react@19.1.0__react-router@7.6.2___react@19.1.0___react-dom@19.1.0____react@19.1.0__vite@6.3.5___picomatch@4.0.2__@babel+core@7.27.4__react@19.1.0__react-dom@19.1.0___react@19.1.0_@react-router+serve@7.6.2__react-router@7.6.2___react@19.1.0___react-dom@19.1.0____react@19.1.0__express@4.21.2__react@19.1.0__react-dom@19.1.0___react@19.1.0_react-router@7.6.2__react@19.1.0__react-dom@19.1.0___react@19.1.0_vite@6.3.5__picomatch@4.0.2_react@19.1.0_react-dom@19.1.0__react@19.1.0_@types+node@22.15.15",
     "npm:@react-router/serve@7.6.2": "7.6.2_react-router@7.6.2__react@19.1.0__react-dom@19.1.0___react@19.1.0_express@4.21.2_react@19.1.0_react-dom@19.1.0__react@19.1.0",
@@ -641,6 +642,9 @@
         "@jridgewell/resolve-uri",
         "@jridgewell/sourcemap-codec"
       ]
+    },
+    "@mizchi/drizzle-orm@0.41.1": {
+      "integrity": "sha512-178NmdD1r+rO2DzxKQpmA2oY33zwQY/yGmtxPAktb8qfJ00OQkGOGkQg8MYEWBuGbSJOVEKGJIChAeEWn9p6Sw=="
     },
     "@mjackson/node-fetch-server@0.2.0": {
       "integrity": "sha512-EMlH1e30yzmTpGLQjlFmaDAjyOeZhng1/XCd7DExR8PNAnG/G1tyruZxEoUe11ClnwGhGrtsdnyyUx1frSzjng=="
@@ -2585,6 +2589,7 @@
       "npm:@biomejs/biome@^2.0.0-beta.6",
       "npm:@deno/vite-plugin@^1.0.4",
       "npm:@hono/zod-openapi@~0.18.3",
+      "npm:@mizchi/drizzle-orm@~0.41.1",
       "npm:@react-router/dev@7.6.2",
       "npm:@react-router/fs-routes@^7.6.2",
       "npm:@react-router/serve@7.6.2",

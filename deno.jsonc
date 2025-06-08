@@ -43,6 +43,7 @@
         "@cliffy/command": "jsr:@cliffy/command@^1.0.0-rc.7",
         "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.4",
         "@hono/zod-openapi": "npm:@hono/zod-openapi@^0.18.3",
+        "@mizchi/drizzle-orm": "npm:@mizchi/drizzle-orm@^0.41.1",
         "@react-router/dev": "npm:@react-router/dev@7.6.2",
         "@react-router/fs-routes": "npm:@react-router/fs-routes@^7.6.2",
         "@react-router/serve": "npm:@react-router/serve@7.6.2",
