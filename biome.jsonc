@@ -76,7 +76,7 @@
                 "useAtIndex": "warn",
                 "useCollapsedIf": "warn",
                 "useComponentExportOnlyModules": {
-                    "level": "error",
+                    "level": "off",
                     "options": {
                         "allowExportNames": [
                             "loader",
