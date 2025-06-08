@@ -8,6 +8,7 @@ import {
     ScrollRestoration,
 } from "react-router";
 import type { Route } from "./+types/root";
+// @ts-ignore -- CSS file import for Vite
 import stylesheet from "./styles/index.css?url";
 
 export const links: Route.LinksFunction = () => [

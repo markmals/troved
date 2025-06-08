@@ -1,4 +1,4 @@
-import { ffmpeg, ffprobe, type FFprobeResult } from "$api/lib/fast-forward.ts";
+import { type FFprobeResult, ffmpeg, ffprobe } from "$api/lib/fast-forward.ts";
 import { Command } from "@cliffy/command";
 import { exists } from "@std/fs";
 import { basename, dirname, extname, join } from "@std/path";
@@ -21,7 +21,7 @@ async function moveFile(source: string, destination: string) {
 async function convertToHEVC(input: string) {
     const isDirectory = (await Deno.stat(input)).isDirectory;
 
-    function externalSubs(input: string): string[] {
+    async function externalSubs(input: string): Promise<string[]> {
         const dir = dirname(input);
         const filename = basename(input, extname(input));
         const subtitleExts = ["srt", "ttxt", "sub", "txt", "vtt"];
@@ -29,7 +29,7 @@ async function convertToHEVC(input: string) {
 
         for (const ext of subtitleExts) {
             const subtitleFile = join(dir, `${filename}.${ext}`);
-            if (exists(subtitleFile)) {
+            if (await exists(subtitleFile)) {
                 foundSubs.push(subtitleFile);
             }
         }
@@ -70,7 +70,7 @@ async function convertToHEVC(input: string) {
         const hasHVC1Tag = videoStream?.codec_tag_string === "hvc1";
 
         // Check for external subtitles
-        const subtitlesFile = externalSubs(filePath).pop();
+        const subtitlesFile = (await externalSubs(filePath)).pop();
 
         // Check for embedded bitmap subtitles; these cannot stay embedded
         const embeddedSubtitles = embeddedSubs(fileInfo);
@@ -229,7 +229,7 @@ await new Command()
     .name("convert-to-hevc")
     .description("Convert video files to HEVC format or apply hvc1 tag if already HEVC")
     .arguments("<input:string>")
-    .action(async (input: string) => {
+    .action(async (_options, input: string) => {
         try {
             await convertToHEVC(input);
         } catch (error) {

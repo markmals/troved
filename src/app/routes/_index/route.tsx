@@ -27,7 +27,8 @@ export async function action({ request }: Route.ActionArgs) {
     }
 }
 
-export async function loader({}: Route.LoaderArgs) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function loader(_args: Route.LoaderArgs) {
     const guestBook = await db.select().from(GuestBook);
 
     return { guestBook };
