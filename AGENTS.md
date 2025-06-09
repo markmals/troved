@@ -1,5 +1,15 @@
 # Contributor Guide
 
+## Deno Issues
+
+If you run into any Deno or Vite related issues that you cannot resolve, use the following commands to try resetting the cache:
+
+```sh
+find . -type d -name "node_modules" -exec rm -rf {} + && find . -type f -name "deno.lock" -delete
+deno clean
+deno install --allow-scripts
+```
+
 ## Critical Route Type Imports
 
 - **Always** import route types from `./+types/[routeName]`
