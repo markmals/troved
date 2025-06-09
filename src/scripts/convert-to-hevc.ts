@@ -1,4 +1,4 @@
-import { ffmpeg, ffprobe, type FFprobeResult } from "$api/lib/fast-forward.ts";
+import { type FFprobeResult, ffmpeg, ffprobe } from "$api/lib/fast-forward.ts";
 import { Command } from "@cliffy/command";
 import { exists } from "@std/fs";
 import { basename, dirname, extname, join } from "@std/path";

@@ -10465,7 +10465,16 @@ export interface operations {
                  * @description Specific text fields.
                  * @example title
                  */
-                fields?: "title" | "tagline" | "overview" | "people" | "translations" | "aliases" | "name" | "biography" | "description";
+                fields?:
+                    | "title"
+                    | "tagline"
+                    | "overview"
+                    | "people"
+                    | "translations"
+                    | "aliases"
+                    | "name"
+                    | "biography"
+                    | "description";
             };
             header?: {
                 /**
@@ -11346,7 +11355,15 @@ export interface operations {
                  * @description how to sort
                  * @example newest
                  */
-                sort: "newest" | "oldest" | "likes" | "replies" | "highest" | "lowest" | "plays" | "watched";
+                sort:
+                    | "newest"
+                    | "oldest"
+                    | "likes"
+                    | "replies"
+                    | "highest"
+                    | "lowest"
+                    | "plays"
+                    | "watched";
             };
             cookie?: never;
         };
@@ -11490,7 +11507,9 @@ export interface operations {
                  * @example true
                  */
                 count_specials?: string;
-                "last_activity (optional, string, `aired`) ... used to calculate last_episode and next_episode": "aired" | "collected";
+                "last_activity (optional, string, `aired`) ... used to calculate last_episode and next_episode":
+                    | "aired"
+                    | "collected";
             };
             header?: {
                 /**
@@ -11594,7 +11613,9 @@ export interface operations {
                  * @example true
                  */
                 count_specials?: string;
-                "last_activity (optional, string, `aired`) ... used to calculate last_episode and next_episode": "aired" | "watched";
+                "last_activity (optional, string, `aired`) ... used to calculate last_episode and next_episode":
+                    | "aired"
+                    | "watched";
             };
             header?: {
                 /**
@@ -12692,7 +12713,15 @@ export interface operations {
                  * @description how to sort
                  * @example newest
                  */
-                sort: "newest" | "oldest" | "likes" | "replies" | "highest" | "lowest" | "plays" | "watched";
+                sort:
+                    | "newest"
+                    | "oldest"
+                    | "likes"
+                    | "replies"
+                    | "highest"
+                    | "lowest"
+                    | "plays"
+                    | "watched";
             };
             cookie?: never;
         };
@@ -17412,7 +17441,13 @@ export interface operations {
             };
             path: {
                 /** @example calendar */
-                section: "calendar" | "progress_watched" | "progress_watched_reset" | "progress_collected" | "recommendations" | "comments";
+                section:
+                    | "calendar"
+                    | "progress_watched"
+                    | "progress_watched_reset"
+                    | "progress_collected"
+                    | "recommendations"
+                    | "comments";
             };
             cookie?: never;
         };
@@ -17614,7 +17649,12 @@ export interface operations {
             };
             path: {
                 /** @example calendar */
-                section: "calendar" | "progress_watched" | "progress_collected" | "recommendations" | "comments";
+                section:
+                    | "calendar"
+                    | "progress_watched"
+                    | "progress_collected"
+                    | "recommendations"
+                    | "comments";
             };
             cookie?: never;
         };
@@ -18253,7 +18293,16 @@ export interface operations {
                  */
                 id: string;
                 /** @example all */
-                type: "all" | "movies" | "shows" | "seasons" | "episodes" | "people" | "history" | "collection" | "ratings";
+                type:
+                    | "all"
+                    | "movies"
+                    | "shows"
+                    | "seasons"
+                    | "episodes"
+                    | "people"
+                    | "history"
+                    | "collection"
+                    | "ratings";
             };
             cookie?: never;
         };

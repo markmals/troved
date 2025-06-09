@@ -2997,7 +2997,21 @@ export interface operations {
                 region?: string;
                 "release_date.gte"?: string;
                 "release_date.lte"?: string;
-                sort_by?: "original_title.asc" | "original_title.desc" | "popularity.asc" | "popularity.desc" | "revenue.asc" | "revenue.desc" | "primary_release_date.asc" | "title.asc" | "title.desc" | "primary_release_date.desc" | "vote_average.asc" | "vote_average.desc" | "vote_count.asc" | "vote_count.desc";
+                sort_by?:
+                    | "original_title.asc"
+                    | "original_title.desc"
+                    | "popularity.asc"
+                    | "popularity.desc"
+                    | "revenue.asc"
+                    | "revenue.desc"
+                    | "primary_release_date.asc"
+                    | "title.asc"
+                    | "title.desc"
+                    | "primary_release_date.desc"
+                    | "vote_average.asc"
+                    | "vote_average.desc"
+                    | "vote_count.asc"
+                    | "vote_count.desc";
                 "vote_average.gte"?: number;
                 "vote_average.lte"?: number;
                 "vote_count.gte"?: number;
@@ -4145,7 +4159,19 @@ export interface operations {
                 language?: string;
                 page?: number;
                 screened_theatrically?: boolean;
-                sort_by?: "first_air_date.asc" | "first_air_date.desc" | "name.asc" | "name.desc" | "original_name.asc" | "original_name.desc" | "popularity.asc" | "popularity.desc" | "vote_average.asc" | "vote_average.desc" | "vote_count.asc" | "vote_count.desc";
+                sort_by?:
+                    | "first_air_date.asc"
+                    | "first_air_date.desc"
+                    | "name.asc"
+                    | "name.desc"
+                    | "original_name.asc"
+                    | "original_name.desc"
+                    | "popularity.asc"
+                    | "popularity.desc"
+                    | "vote_average.asc"
+                    | "vote_average.desc"
+                    | "vote_count.asc"
+                    | "vote_count.desc";
                 timezone?: string;
                 "vote_average.gte"?: number;
                 "vote_average.lte"?: number;
@@ -9662,7 +9688,16 @@ export interface operations {
     "find-by-id": {
         parameters: {
             query: {
-                external_source: "" | "imdb_id" | "facebook_id" | "instagram_id" | "tvdb_id" | "tiktok_id" | "twitter_id" | "wikidata_id" | "youtube_id";
+                external_source:
+                    | ""
+                    | "imdb_id"
+                    | "facebook_id"
+                    | "instagram_id"
+                    | "tvdb_id"
+                    | "tiktok_id"
+                    | "twitter_id"
+                    | "wikidata_id"
+                    | "youtube_id";
                 language?: string;
             };
             header?: never;
@@ -19729,8 +19764,6 @@ export interface operations {
                          *     The show's production value is top-notch, with stunning visuals and cinematography that capture the bleak and haunting atmosphere of a post-apocalyptic world. The use of practical effects and makeup is impressive and adds to the overall immersion of the story.
                          *
                          *     Overall, "The Last of Us" is an outstanding TV series that does justice to the source material. It's a must-watch for fans of the video game and anyone who enjoys gripping and emotional storytelling. I would rate it a 9 out of 10.
-                         *
-                         *
                          *
                          *     Written and Reviewed by RSOliveira */
                         content?: string;
