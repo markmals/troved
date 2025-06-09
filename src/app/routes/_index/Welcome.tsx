@@ -9,7 +9,7 @@ export function Welcome({
 }: {
     guestBook: {
         name: string;
-        id: string;
+        id: number;
     }[];
     guestBookError?: string;
 }) {
