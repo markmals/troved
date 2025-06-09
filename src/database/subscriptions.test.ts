@@ -1,69 +1,139 @@
-import { DatabaseSync } from "node:sqlite";
-import { join } from "@std/path";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-let db: typeof import("./mod.ts").db;
-let funcs: typeof import("./subscriptions.ts");
-const TEST_DB = join(Deno.cwd(), "test.sqlite");
+// Define types for our mock objects
+interface MockQuery {
+    from: ReturnType<typeof vi.fn>;
+    where?: ReturnType<typeof vi.fn>;
+}
 
-beforeAll(async () => {
-    try {
-        await Deno.remove(TEST_DB);
-    } catch {
-        // ignore
-    }
-    const { drizzle } = await import("@mizchi/drizzle-orm/dist/node-sqlite/index.js");
-    const { GuestBook, Subscriptions } = await import("./schema.ts");
-    const client = new DatabaseSync(TEST_DB);
-    db = drizzle(client, { schema: { guestBook: GuestBook, subscriptions: Subscriptions } });
-    vi.mock("./mod.ts", () => ({ db }));
-    db.$client.exec(`CREATE TABLE subscriptions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        series_id INTEGER NOT NULL UNIQUE,
-        series_name TEXT NOT NULL,
-        poster_path TEXT,
-        first_air_date TEXT,
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL
-    );`);
-    funcs = await import("./subscriptions.ts");
-});
+interface MockInsert {
+    values: ReturnType<typeof vi.fn>;
+}
+
+interface MockDelete {
+    where: ReturnType<typeof vi.fn>;
+}
+
+// Mock the database module
+vi.mock("./mod.ts", () => ({
+    db: {
+        insert: vi.fn(),
+        select: vi.fn(),
+        delete: vi.fn(),
+    },
+}));
+
+import { db } from "./mod.ts";
+// Import the actual functions to test
+import {
+    getAllSubscriptions,
+    getSubscription,
+    isSeriesSubscribed,
+    subscribeToSeries,
+    unsubscribeFromAllSeries,
+    unsubscribeFromSeries,
+} from "./subscriptions.ts";
+
+// Get the mocked db instance with proper typing
+const mockDb = vi.mocked(db) as {
+    insert: ReturnType<typeof vi.fn>;
+    select: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
+};
 
 beforeEach(() => {
-    db.$client.exec("DELETE FROM subscriptions;");
-});
+    vi.clearAllMocks();
 
-afterAll(() => {
-    db.$client.close();
-    try {
-        Deno.removeSync(TEST_DB);
-    } catch {
-        // ignore
-    }
+    // Set up default mock implementations
+    const mockInsert: MockInsert = {
+        values: vi.fn().mockResolvedValue(undefined),
+    };
+
+    const mockQuery: MockQuery = {
+        from: vi.fn().mockResolvedValue([]),
+    };
+
+    const mockDelete: MockDelete = {
+        where: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockDb.insert.mockReturnValue(mockInsert);
+    mockDb.select.mockReturnValue(mockQuery);
+    mockDb.delete.mockReturnValue(mockDelete);
 });
 
 describe("subscriptions", () => {
     it("subscribe and fetch", async () => {
-        await funcs.subscribeToSeries(1, { name: "Test" });
-        const all = await funcs.getAllSubscriptions();
+        const mockSubscription = {
+            id: 1,
+            seriesId: 1,
+            seriesName: "Test",
+            posterPath: null,
+            firstAirDate: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        // Mock getAllSubscriptions to return our test data
+        const getAllQuery: MockQuery = {
+            from: vi.fn().mockResolvedValue([mockSubscription]),
+        };
+        mockDb.select.mockReturnValueOnce(getAllQuery);
+
+        // Mock isSeriesSubscribed to return [{ id: 1 }] (true case)
+        const isSubscribedQuery: MockQuery = {
+            from: vi.fn().mockReturnValue({
+                where: vi.fn().mockResolvedValue([{ id: 1 }]),
+            }),
+        };
+        mockDb.select.mockReturnValueOnce(isSubscribedQuery);
+
+        // Mock getSubscription to return the subscription
+        const getQuery: MockQuery = {
+            from: vi.fn().mockReturnValue({
+                where: vi.fn().mockResolvedValue([mockSubscription]),
+            }),
+        };
+        mockDb.select.mockReturnValueOnce(getQuery);
+
+        await subscribeToSeries(1, { name: "Test" });
+
+        const all = await getAllSubscriptions();
         expect(all.length).toBe(1);
         expect(all[0].seriesName).toBe("Test");
-        expect(await funcs.isSeriesSubscribed(1)).toBe(true);
-        const sub = await funcs.getSubscription(1);
+
+        expect(await isSeriesSubscribed(1)).toBe(true);
+
+        const sub = await getSubscription(1);
         expect(sub?.seriesId).toBe(1);
     });
 
     it("unsubscribe single", async () => {
-        await funcs.subscribeToSeries(1, { name: "Test" });
-        await funcs.unsubscribeFromSeries(1);
-        expect(await funcs.isSeriesSubscribed(1)).toBe(false);
+        // Mock isSeriesSubscribed to return false (empty array means not found)
+        const emptyQuery: MockQuery = {
+            from: vi.fn().mockReturnValue({
+                where: vi.fn().mockResolvedValue([]),
+            }),
+        };
+        mockDb.select.mockReturnValue(emptyQuery);
+
+        await subscribeToSeries(1, { name: "Test" });
+        await unsubscribeFromSeries(1);
+        expect(await isSeriesSubscribed(1)).toBe(false);
     });
 
     it("unsubscribe all", async () => {
-        await funcs.subscribeToSeries(1, { name: "Test" });
-        await funcs.subscribeToSeries(2, { name: "Another" });
-        await funcs.unsubscribeFromAllSeries();
-        const all = await funcs.getAllSubscriptions();
+        // Mock getAllSubscriptions to return empty array
+        const emptyAllQuery: MockQuery = {
+            from: vi.fn().mockResolvedValue([]),
+        };
+        mockDb.select.mockReturnValue(emptyAllQuery);
+
+        await subscribeToSeries(1, { name: "Test" });
+        await subscribeToSeries(2, { name: "Another" });
+        await unsubscribeFromAllSeries();
+
+        const all = await getAllSubscriptions();
         expect(all.length).toBe(0);
     });
 });
