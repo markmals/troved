@@ -1,5 +1,5 @@
-import { join } from "@std/path/join";
 import { DatabaseSync } from "node:sqlite";
+import { join } from "@std/path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 let db: typeof import("./mod.ts").db;
