@@ -1,14 +1,17 @@
 import type { PropsWithChildren } from "react";
 import {
+    href,
     isRouteErrorResponse,
     Links,
     Meta,
+    NavLink,
     Outlet,
     Scripts,
     ScrollRestoration,
 } from "react-router";
 import type { Route } from "./+types/root";
-import stylesheet from "./styles/index.css?url";
+
+const stylesheet = new URL("./styles/index.css", import.meta.url).href;
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -19,8 +22,7 @@ export const links: Route.LinksFunction = () => [
     },
     {
         rel: "stylesheet",
-        href:
-            "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
     },
     { rel: "stylesheet", href: stylesheet },
 ];
@@ -44,7 +46,18 @@ export function Layout({ children }: PropsWithChildren) {
 }
 
 export default function App() {
-    return <Outlet />;
+    return (
+        <>
+            <nav className="flex gap-4 border-b p-4">
+                <NavLink end to={href("/")}>
+                    Home
+                </NavLink>
+                <NavLink to={href("/series/search")}>Search</NavLink>
+                <NavLink to={href("/subscriptions")}>Subscriptions</NavLink>
+            </nav>
+            <Outlet />
+        </>
+    );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -54,9 +67,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
     if (isRouteErrorResponse(error)) {
         message = error.status === 404 ? "404" : "Error";
-        details = error.status === 404
-            ? "The requested page could not be found."
-            : error.statusText || details;
+        details =
+            error.status === 404
+                ? "The requested page could not be found."
+                : error.statusText || details;
     } else if (import.meta.env.DEV && error && error instanceof Error) {
         details = error.message;
         stack = error.stack;

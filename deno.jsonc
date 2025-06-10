@@ -56,5 +56,15 @@
     },
     // Disable; use Biome instead
     "fmt": { "exclude": ["./"] },
-    "lint": { "exclude": ["./"] }
+    "lint": { "exclude": ["./"] },
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "jsxImportSource": "react",
+        "lib": ["Deno.NS", "DOM", "DOM.Iterable", "ESNext"],
+        "strict": true,
+        "types": ["vite/client", "./src/app/declarations.d.ts"],
+        "rootDirs": ["./", "./.react-router/types"],
+        "checkJs": true,
+        "verbatimModuleSyntax": true
+    }
 }
