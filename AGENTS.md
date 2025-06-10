@@ -10,6 +10,14 @@ deno clean
 deno install --allow-scripts
 ```
 
+## New UI Components
+
+Use `shadcn` for new UI components. They can be installed as such (for example, for the accordion component):
+
+```sh
+deno run -A npm:shadcn add accordion
+```
+
 ## Critical Route Type Imports
 
 - **Always** import route types from `./+types/[routeName]`
