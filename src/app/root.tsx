@@ -1,12 +1,21 @@
 import type { PropsWithChildren } from "react";
 import {
+    href,
     isRouteErrorResponse,
+    Link,
     Links,
     Meta,
     Outlet,
     Scripts,
     ScrollRestoration,
+    useLocation,
 } from "react-router";
+import {
+    NavigationMenu,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+} from "~/components/ui/navigation-menu.tsx";
 import type { Route } from "./+types/root";
 import stylesheet from "./styles/index.css?url";
 
@@ -19,8 +28,7 @@ export const links: Route.LinksFunction = () => [
     },
     {
         rel: "stylesheet",
-        href:
-            "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
     },
     { rel: "stylesheet", href: stylesheet },
 ];
@@ -34,7 +42,7 @@ export function Layout({ children }: PropsWithChildren) {
                 <Meta />
                 <Links />
             </head>
-            <body>
+            <body className="bg-background p-2">
                 {children}
                 <ScrollRestoration />
                 <Scripts />
@@ -43,8 +51,54 @@ export function Layout({ children }: PropsWithChildren) {
     );
 }
 
+const navigation = {
+    home: href("/"),
+    search: href("/series/search"),
+    subscriptions: href("/subscriptions"),
+};
+
 export default function App() {
-    return <Outlet />;
+    const location = useLocation();
+
+    return (
+        <>
+            <NavigationMenu>
+                <NavigationMenuList>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild>
+                            <Link
+                                data-active={location.pathname === navigation.home}
+                                to={navigation.home}
+                            >
+                                Home
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild>
+                            <Link
+                                data-active={location.pathname === navigation.search}
+                                to={navigation.search}
+                            >
+                                Search
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild>
+                            <Link
+                                data-active={location.pathname === navigation.subscriptions}
+                                to={navigation.subscriptions}
+                            >
+                                Subscriptions
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                </NavigationMenuList>
+            </NavigationMenu>
+            <Outlet />
+        </>
+    );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -54,9 +108,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
     if (isRouteErrorResponse(error)) {
         message = error.status === 404 ? "404" : "Error";
-        details = error.status === 404
-            ? "The requested page could not be found."
-            : error.statusText || details;
+        details =
+            error.status === 404
+                ? "The requested page could not be found."
+                : error.statusText || details;
     } else if (import.meta.env.DEV && error && error instanceof Error) {
         details = error.message;
         stack = error.stack;
