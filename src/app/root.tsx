@@ -2,16 +2,22 @@ import type { PropsWithChildren } from "react";
 import {
     href,
     isRouteErrorResponse,
+    Link,
     Links,
     Meta,
-    NavLink,
     Outlet,
     Scripts,
     ScrollRestoration,
+    useLocation,
 } from "react-router";
+import {
+    NavigationMenu,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+} from "~/components/ui/navigation-menu.tsx";
 import type { Route } from "./+types/root";
-
-const stylesheet = new URL("./styles/index.css", import.meta.url).href;
+import stylesheet from "./styles/index.css?url";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -36,7 +42,7 @@ export function Layout({ children }: PropsWithChildren) {
                 <Meta />
                 <Links />
             </head>
-            <body>
+            <body className="bg-background p-2">
                 {children}
                 <ScrollRestoration />
                 <Scripts />
@@ -45,16 +51,51 @@ export function Layout({ children }: PropsWithChildren) {
     );
 }
 
+const navigation = {
+    home: href("/"),
+    search: href("/series/search"),
+    subscriptions: href("/subscriptions"),
+};
+
 export default function App() {
+    const location = useLocation();
+
     return (
         <>
-            <nav className="flex gap-4 border-b p-4">
-                <NavLink end to={href("/")}>
-                    Home
-                </NavLink>
-                <NavLink to={href("/series/search")}>Search</NavLink>
-                <NavLink to={href("/subscriptions")}>Subscriptions</NavLink>
-            </nav>
+            <NavigationMenu>
+                <NavigationMenuList>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild>
+                            <Link
+                                data-active={location.pathname === navigation.home}
+                                to={navigation.home}
+                            >
+                                Home
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild>
+                            <Link
+                                data-active={location.pathname === navigation.search}
+                                to={navigation.search}
+                            >
+                                Search
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild>
+                            <Link
+                                data-active={location.pathname === navigation.subscriptions}
+                                to={navigation.subscriptions}
+                            >
+                                Subscriptions
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                </NavigationMenuList>
+            </NavigationMenu>
             <Outlet />
         </>
     );
