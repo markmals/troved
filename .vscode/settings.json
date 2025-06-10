@@ -36,7 +36,7 @@
         "*.css": "$(capture).css.map, $(capture).*.css",
         ".env": "*.env, .env.*",
         ".env.local": "*.env, .env.*",
-        "deno.json*": ".github*, .vscode*, .prettier*, prettier*, workspace.json, *.lock, biome.json*, package.json",
+        "deno.json*": ".github*, .vscode*, .prettier*, prettier*, workspace.json, *.lock, biome.json*, tsconfig.*, package.json*",
         "readme*": "authors, backers*, changelog*, citation*, code_of_conduct*, codeowners, contributing*, contributors, copying, credits, governance.md, history.md, license*, maintainers, readme*, security.md, sponsors*",
         "*.ts": "$(capture).ts.map, $(capture).*.ts, $(capture)_*.ts",
         "*.tsx": "$(capture).ts, $(capture).*.tsx, $(capture)_*.ts, $(capture)_*.tsx",
@@ -48,7 +48,6 @@
         "**/.DS_Store": true,
         "build": true,
         ".react-router": true,
-        "package.json": true,
         ".github": true,
         ".cursor": true
     },

@@ -1,9 +1,18 @@
 {
-    "comment": "This file only exists to help shadcn/ui. Do not use this file, instread use ./deno.json.",
     "compilerOptions": {
+        "strict": true,
+        "lib": ["Deno.NS", "DOM", "DOM.Iterable", "ESNext"],
+        "jsx": "react-jsx",
+        "jsxImportSource": "react",
+        "types": ["vite/client"],
+        "rootDirs": [".", "./.react-router/types"],
+        "checkJs": true,
+        "verbatimModuleSyntax": true,
         "baseUrl": ".",
         "paths": {
-            "~/*": ["./src/app/*"]
+            "~/*": ["./src/app/*"],
+            "$api/*": ["./src/api/*"],
+            "$db/*": ["./src/database/*"]
         }
     }
 }

@@ -5,7 +5,24 @@
         "clientKind": "git",
         "useIgnoreFile": true
     },
-    "formatter": { "enabled": false },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 100
+    },
+    "javascript": {
+        "formatter": {
+            "arrowParentheses": "asNeeded",
+            "semicolons": "always",
+            "quoteStyle": "double"
+        }
+    },
+    "css": {
+        "formatter": {
+            "quoteStyle": "double"
+        }
+    },
     "linter": {
         "enabled": true,
         "rules": {
