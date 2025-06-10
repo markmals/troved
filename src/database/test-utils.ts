@@ -61,8 +61,9 @@ export class DrizzleMockStore<T extends MockRecord> {
         } as T;
 
         // Use seriesId as key if available, otherwise use id
-        const key = (values as Record<string, unknown>).seriesId as number ||
-            record[this.idField] as number;
+        const key =
+            ((values as Record<string, unknown>).seriesId as number) ||
+            (record[this.idField] as number);
         this.store.set(key, record);
         return record;
     }
@@ -88,6 +89,12 @@ export class DrizzleMockStore<T extends MockRecord> {
     }
 }
 
+export type MockDb = {
+    insert: { mockImplementation: (...args: unknown[]) => unknown };
+    select: { mockImplementation: (...args: unknown[]) => unknown };
+    delete: { mockImplementation: (...args: unknown[]) => unknown };
+};
+
 export interface DrizzleMockSetup<T extends MockRecord> {
     store: DrizzleMockStore<T>;
     setupInsert: (transformer?: (values: Partial<T>) => T) => void;
@@ -96,16 +103,16 @@ export interface DrizzleMockSetup<T extends MockRecord> {
     setupDeleteWhere: (handler?: () => void) => void;
     setupDeleteAll: (handler?: () => void) => void;
     /** Override the default mocked db - usually not needed */
-    initializeWith: (mockedDb: any) => void;
+    initializeWith: (mockedDb: MockDb) => void;
 }
 
 /**
  * Complete setup for Drizzle mocking with sensible defaults
- * 
+ *
  * @param dbModule The mocked database module (from vi.mock)
  * @returns Store and mock setup ready to use
  */
-export function setupDrizzleMocks<T extends MockRecord>(dbModule: any) {
+export function setupDrizzleMocks<T extends MockRecord>(dbModule: unknown) {
     const store = new DrizzleMockStore<T>();
     const mock = createDrizzleMockWithDefaults(store, dbModule);
     return { store, mock };
@@ -113,27 +120,27 @@ export function setupDrizzleMocks<T extends MockRecord>(dbModule: any) {
 
 /**
  * Create a complete Drizzle mock setup with automatic db mocking
- * 
+ *
  * @param store The in-memory store for testing
  * @param dbModule The mocked database module (from vi.mock)
  * @returns A fully configured mock setup with sensible defaults
  */
 export function createDrizzleMockWithDefaults<T extends MockRecord>(
     store: DrizzleMockStore<T>,
-    dbModule: any
+    dbModule: unknown,
 ): DrizzleMockSetup<T> {
     const mockSetup = createDrizzleMock(store);
-    const mockedDb = vi.mocked(dbModule.db);
-    
+    const mockedDb = vi.mocked((dbModule as { db: unknown }).db);
+
     // Initialize with the mocked db automatically
     mockSetup.initializeWith(mockedDb);
-    
+
     // Set up default behaviors that work for most cases
     mockSetup.setupSelectAll(); // Uses store.findAll() by default
     mockSetup.setupSelectWhere(); // Returns empty by default
     mockSetup.setupDeleteAll(); // Calls store.deleteAll() by default
     mockSetup.setupDeleteWhere(); // No-op by default
-    
+
     return mockSetup;
 }
 
@@ -151,7 +158,7 @@ export function createDrizzleMock<T extends MockRecord>(
     let currentSelectWhereHandler: (() => unknown[]) | undefined;
     let currentDeleteWhereHandler: (() => void) | undefined;
     let currentDeleteAllHandler: (() => void) | undefined;
-    let targetMockedDb: any = null;
+    let targetMockedDb: MockDb | null = null;
 
     const setupInsertMock = () => {
         const mockInsert = {
@@ -178,19 +185,16 @@ export function createDrizzleMock<T extends MockRecord>(
                     return Promise.resolve([]);
                 },
             };
-            
+
             // Make fromResult itself a thenable for select all operations
-            const selectAllResult = currentSelectAllHandler ? 
-                currentSelectAllHandler() : 
-                store.findAll();
-            
+            const selectAllResult = currentSelectAllHandler
+                ? currentSelectAllHandler()
+                : store.findAll();
+
             return {
                 from: () => {
                     // Return a hybrid object that can be both awaited directly or used with .where()
-                    const result = Object.assign(
-                        Promise.resolve(selectAllResult),
-                        fromResult
-                    );
+                    const result = Object.assign(Promise.resolve(selectAllResult), fromResult);
                     return result;
                 },
             };
@@ -202,20 +206,22 @@ export function createDrizzleMock<T extends MockRecord>(
             if (table) {
                 // This could be either delete all or delete with where
                 // Return a hybrid object that can handle both cases
-                const deleteAllResult = Promise.resolve((() => {
-                    if (currentDeleteAllHandler) {
-                        currentDeleteAllHandler();
-                    }
-                    return undefined;
-                })());
-                
+                const deleteAllResult = Promise.resolve(
+                    (() => {
+                        if (currentDeleteAllHandler) {
+                            currentDeleteAllHandler();
+                        }
+                        return undefined;
+                    })(),
+                );
+
                 const whereMethod = vi.fn().mockImplementation(() => {
                     if (currentDeleteWhereHandler) {
                         currentDeleteWhereHandler();
                     }
                     return Promise.resolve(undefined);
                 });
-                
+
                 // Return a hybrid that can be awaited directly (for delete all) or used with .where()
                 return Object.assign(deleteAllResult, {
                     where: whereMethod,
@@ -235,7 +241,7 @@ export function createDrizzleMock<T extends MockRecord>(
             setupInsertMock();
             setupSelectMock();
             setupDeleteMock();
-            
+
             targetMockedDb.insert.mockImplementation(mockDb.insert);
             targetMockedDb.select.mockImplementation(mockDb.select);
             targetMockedDb.delete.mockImplementation(mockDb.delete);
@@ -264,7 +270,7 @@ export function createDrizzleMock<T extends MockRecord>(
             currentDeleteAllHandler = handler || (() => store.deleteAll());
             applyMocks();
         },
-        initializeWith: (mockedDb: any) => {
+        initializeWith: (mockedDb: MockDb) => {
             targetMockedDb = mockedDb;
             applyMocks();
         },

@@ -8,4 +8,12 @@ export namespace tmdb {
 
         return data;
     }
+
+    /** Fetch detailed TV series info */
+    export async function getSeriesDetails(seriesId: string | number) {
+        const { data } = await client.GET("/3/tv/{series_id}", {
+            params: { path: { series_id: Number(seriesId) } },
+        });
+        return data;
+    }
 }
