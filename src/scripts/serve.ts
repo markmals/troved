@@ -1,4 +1,3 @@
-import api from "$api/mod.ts";
 import { Hono } from "hono";
 import { createRequestHandler } from "react-router";
 import { reactRouter } from "./react-router-hono-middleware.ts";
@@ -11,7 +10,7 @@ const handler = createRequestHandler(
 
 const app = new Hono();
 
-app.route("/api", api);
+// app.route("/api", api);
 app.use(reactRouter(handler));
 
 const port = Number.parseInt(Deno.env.get("PORT") || "3000");
