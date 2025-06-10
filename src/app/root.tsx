@@ -42,7 +42,7 @@ export function Layout({ children }: PropsWithChildren) {
                 <Meta />
                 <Links />
             </head>
-            <body className="bg-background p-2">
+            <body className="bg-background">
                 {children}
                 <ScrollRestoration />
                 <Scripts />
@@ -62,40 +62,42 @@ export default function App() {
 
     return (
         <>
-            <NavigationMenu>
-                <NavigationMenuList>
-                    <NavigationMenuItem>
-                        <NavigationMenuLink asChild>
-                            <Link
-                                data-active={location.pathname === navigation.home}
-                                to={navigation.home}
-                            >
-                                Home
-                            </Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem>
-                        <NavigationMenuLink asChild>
-                            <Link
-                                data-active={location.pathname === navigation.search}
-                                to={navigation.search}
-                            >
-                                Search
-                            </Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem>
-                        <NavigationMenuLink asChild>
-                            <Link
-                                data-active={location.pathname === navigation.subscriptions}
-                                to={navigation.subscriptions}
-                            >
-                                Subscriptions
-                            </Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
-                </NavigationMenuList>
-            </NavigationMenu>
+            <header className="sticky top-0 z-50 w-full bg-background">
+                <NavigationMenu className="h-14 px-6">
+                    <NavigationMenuList>
+                        <NavigationMenuItem>
+                            <NavigationMenuLink asChild>
+                                <Link
+                                    data-active={location.pathname === navigation.home}
+                                    to={navigation.home}
+                                >
+                                    Home
+                                </Link>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+                        <NavigationMenuItem>
+                            <NavigationMenuLink asChild>
+                                <Link
+                                    data-active={location.pathname === navigation.search}
+                                    to={navigation.search}
+                                >
+                                    Search
+                                </Link>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+                        <NavigationMenuItem>
+                            <NavigationMenuLink asChild>
+                                <Link
+                                    data-active={location.pathname === navigation.subscriptions}
+                                    to={navigation.subscriptions}
+                                >
+                                    Subscriptions
+                                </Link>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
+            </header>
             <Outlet />
         </>
     );

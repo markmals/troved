@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Route } from "./+types/series.$seriesId";
-import { action, loader } from "./series.$seriesId.tsx";
+import { action, loader } from "./route.tsx";
 
 // Mock services and db
 vi.mock("$api/services/mod.ts", () => ({
