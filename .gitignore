@@ -7,6 +7,7 @@ node_modules/
 .cache
 build/
 .output
+.vite
 
 # Database
 /db.sqlite3
@@ -20,4 +21,4 @@ build/
 *.tsbuildinfo
 
 # Media folder for local testing
-/media/ 
+/media/
