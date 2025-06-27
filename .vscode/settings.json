@@ -36,7 +36,7 @@
         "*.css": "$(capture).css.map, $(capture).*.css",
         ".env": "*.env, .env.*",
         ".env.local": "*.env, .env.*",
-        "deno.json*": ".github*, .vscode*, .prettier*, prettier*, workspace.json, *.lock, biome.json*, tsconfig.*, package.json*",
+        "deno.json*": ".github*, .vscode*, .prettier*, prettier*, workspace.json, *.lock, biome.json*, tsconfig.*, package.json*, components.json",
         "readme*": "authors, backers*, changelog*, citation*, code_of_conduct*, codeowners, contributing*, contributors, copying, credits, governance.md, history.md, license*, maintainers, readme*, security.md, sponsors*",
         "*.ts": "$(capture).ts.map, $(capture).*.ts, $(capture)_*.ts",
         "*.tsx": "$(capture).ts, $(capture).*.tsx, $(capture)_*.ts, $(capture)_*.tsx",
@@ -49,7 +49,12 @@
         "build": true,
         ".react-router": true,
         ".github": true,
-        ".cursor": true
+        ".cursor": true,
+        ".claude": true,
+        ".vite": true,
+        "AGENTS.md": true,
+        "CLAUDE.md": true,
+        "db.sqlite3": true
     },
 
     "tailwindCSS.experimental.classRegex": [
