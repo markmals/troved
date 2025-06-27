@@ -42,7 +42,7 @@ export function Layout({ children }: PropsWithChildren) {
                 <Meta />
                 <Links />
             </head>
-            <body className="bg-background">
+            <body className="bg-gray-50 dark:bg-zinc-950">
                 {children}
                 <ScrollRestoration />
                 <Scripts />
@@ -62,13 +62,13 @@ export default function App() {
 
     return (
         <>
-            <header className="sticky top-0 z-50 w-full bg-background">
+            <header className="sticky top-0 z-50 w-full bg-gray-50 dark:bg-zinc-950">
                 <NavigationMenu className="h-14 px-6">
                     <NavigationMenuList>
                         <NavigationMenuItem>
                             <NavigationMenuLink asChild>
                                 <Link
-                                    data-active={location.pathname === navigation.home}
+                                    data-active={location.pathname.includes(navigation.home)}
                                     to={navigation.home}
                                 >
                                     Home
@@ -78,7 +78,7 @@ export default function App() {
                         <NavigationMenuItem>
                             <NavigationMenuLink asChild>
                                 <Link
-                                    data-active={location.pathname === navigation.search}
+                                    data-active={location.pathname.includes(navigation.search)}
                                     to={navigation.search}
                                 >
                                     Search
@@ -88,7 +88,9 @@ export default function App() {
                         <NavigationMenuItem>
                             <NavigationMenuLink asChild>
                                 <Link
-                                    data-active={location.pathname === navigation.subscriptions}
+                                    data-active={location.pathname.includes(
+                                        navigation.subscriptions,
+                                    )}
                                     to={navigation.subscriptions}
                                 >
                                     Subscriptions
