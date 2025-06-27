@@ -140,28 +140,6 @@ export default function SeriesDetails({ loaderData }: Route.ComponentProps) {
                             </CardContent>
                         </Card>
 
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Seasons</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="font-bold text-2xl">{series.number_of_seasons}</p>
-                            </CardContent>
-                        </Card>
-
-                        {series.formattedLastAirDate && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Last Air Date</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="font-mono text-sm">
-                                        {series.formattedLastAirDate}
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        )}
-
                         {series.nextEpisode && (
                             <Card>
                                 <CardHeader>
@@ -179,6 +157,41 @@ export default function SeriesDetails({ loaderData }: Route.ComponentProps) {
                             </Card>
                         )}
 
+                        {series.formattedLastAirDate && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Last Air Date</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-mono text-sm">
+                                        {series.formattedLastAirDate}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Seasons</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="font-bold text-2xl">{series.number_of_seasons}</p>
+                            </CardContent>
+                        </Card>
+
+                        {series.primaryNetwork && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Network</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-1">
+                                        <p className="text-sm">{series.primaryNetwork.name}</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+
                         {series.genres && series.genres.length > 0 && (
                             <Card>
                                 <CardHeader>
@@ -191,19 +204,6 @@ export default function SeriesDetails({ loaderData }: Route.ComponentProps) {
                                                 {genre.name}
                                             </Badge>
                                         ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-
-                        {series.primaryNetwork && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Network</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-1">
-                                        <p className="text-sm">{series.primaryNetwork.name}</p>
                                     </div>
                                 </CardContent>
                             </Card>
