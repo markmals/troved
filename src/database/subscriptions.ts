@@ -33,10 +33,7 @@ export async function unsubscribeFromAllSeries() {
 
 /** Check if a specific series is subscribed */
 export async function getSubscription(seriesId: number) {
-    const [row] = await db
-        .select()
-        .from(Subscriptions)
-        .where(eq(Subscriptions.seriesId, seriesId));
+    const [row] = await db.select().from(Subscriptions).where(eq(Subscriptions.seriesId, seriesId));
     return row ?? null;
 }
 
@@ -46,10 +43,11 @@ export async function getAllSubscriptions() {
 }
 
 /** Quick boolean check for UI state */
-export async function isSeriesSubscribed(seriesId: number) {
-    const [row] = await db
-        .select({ id: Subscriptions.id })
+export async function isSeriesSubscribed(seriesId: number): Promise<boolean> {
+    const result = await db
+        .select({ exists: Subscriptions.id })
         .from(Subscriptions)
-        .where(eq(Subscriptions.seriesId, seriesId));
-    return row !== undefined;
+        .where(eq(Subscriptions.seriesId, seriesId))
+        .limit(1);
+    return result.length > 0;
 }
