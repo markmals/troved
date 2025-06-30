@@ -1,6 +1,7 @@
 import { Form, href, Link, useSubmit } from "react-router";
 import { Card, CardContent } from "~/components/ui/card.tsx";
 import { Input } from "~/components/ui/input.tsx";
+import { client } from "~/lib/clients.ts";
 import type { Route } from "./+types/series.search";
 
 interface SearchResult {
@@ -16,20 +17,19 @@ export async function loader({ request }: Route.LoaderArgs) {
         return { q, results: [] as SearchResult[] };
     }
 
-    const apiUrl = new URL("/api/search", request.url);
-    apiUrl.searchParams.set("q", q);
+    const result = await client.GET("/api/search", {
+        params: { query: { q } },
+        baseUrl: url.origin,
+    });
 
-    const response = await fetch(apiUrl);
-    if (!response.ok) {
-        throw response;
+    if (!result.data) {
+        return { q, results: [] as SearchResult[] };
     }
 
-    const results = (await response.json()) as SearchResult[];
-    return { q, results };
+    return { q, results: result.data };
 }
 
 export default function SeriesSearch({ loaderData }: Route.ComponentProps) {
-    // const navigation = useNavigation();
     const submit = useSubmit();
 
     return (
@@ -45,7 +45,6 @@ export default function SeriesSearch({ loaderData }: Route.ComponentProps) {
                     type="search"
                 />
             </Form>
-            {/* {navigation.state === "loading" && <p>Searching...</p>} */}
             <ul className="space-y-2">
                 {loaderData.results.map(result => (
                     <Card className="w-full" key={result.id}>
@@ -63,8 +62,4 @@ export default function SeriesSearch({ loaderData }: Route.ComponentProps) {
             </ul>
         </main>
     );
-}
-
-export function ErrorBoundary() {
-    throw new Response("Not Found", { status: 404 });
 }
