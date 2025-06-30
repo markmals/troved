@@ -3,7 +3,7 @@ description:
 globs: 
 alwaysApply: true
 ---
-# Deno 2.x - Cursor Rules
+# Deno - Cursor Rules
 
 ## Environment Setup
 - Always use Deno 2.x features and APIs
@@ -52,3 +52,13 @@ alwaysApply: true
 - Use console.log with clear prefixes during development
 - Check Deno permissions first when encountering errors
 - Verify deno.json `imports` configuration for dependency issues
+
+## Deno Issues
+
+If you run into any Deno or Vite related issues that you cannot resolve, use the following commands to try resetting the cache:
+
+```sh
+find . -type d -name "node_modules" -exec rm -rf {} + && find . -type f -name "deno.lock" -delete
+deno clean
+deno install --allow-scripts
+```
