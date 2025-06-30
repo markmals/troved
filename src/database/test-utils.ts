@@ -130,7 +130,8 @@ export function createDrizzleMockWithDefaults<T extends MockRecord>(
     dbModule: unknown,
 ): DrizzleMockSetup<T> {
     const mockSetup = createDrizzleMock(store);
-    const mockedDb = vi.mocked((dbModule as { db: unknown }).db);
+    // biome-ignore lint/suspicious/noExplicitAny: Necessary
+    const mockedDb = vi.mocked((dbModule as { db: any }).db);
 
     // Initialize with the mocked db automatically
     mockSetup.initializeWith(mockedDb);
