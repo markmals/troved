@@ -30,6 +30,8 @@
             "dependencies": ["generate-tmdb", "generate-trakt"]
         },
 
+        "generate-oapi-ts": "deno run -A npm:openapi-typescript",
+
         "check": "deno run -A npm:@biomejs/biome check --write --unsafe --assist-enabled=true .",
         "typegen": "deno run -A npm:@react-router/dev typegen",
         "typecheck": {
@@ -53,7 +55,6 @@
 
         "@hono/zod-openapi": "npm:@hono/zod-openapi@^0.18.3",
         "@mizchi/drizzle-orm": "npm:@mizchi/drizzle-orm@^0.41.1",
-        "@radix-ui/react-accordion": "npm:@radix-ui/react-accordion@^1.2.11",
         "@radix-ui/react-navigation-menu": "npm:@radix-ui/react-navigation-menu@^1.2.13",
         "@radix-ui/react-slot": "npm:@radix-ui/react-slot@^1.2.3",
         "apib2swagger": "npm:apib2swagger@^1.17.1",
